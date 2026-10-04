@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mythos Unbound</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0a0618;color:#fff;font:14px/1.4 system-ui,"Segoe UI",Roboto,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+.vg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(120% 100% at 50% 50%,transparent 55%,#000b)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid #ffd08a;outline-offset:3px}
+h1{font:600 clamp(40px,9vw,110px)/.95 "Iowan Old Style","Palatino Linotype",Georgia,serif;letter-spacing:.04em;background:linear-gradient(#fff,#ffd08a 60%,#ff7a8a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.scr{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;padding:clamp(20px,5vw,64px);background:linear-gradient(90deg,#0a0618e6,#0a061800 70%),linear-gradient(0deg,#0a0618d9,transparent 55%);transition:opacity .4s,visibility 0s .4s}
+.scr.off{opacity:0;visibility:hidden;pointer-events:none}
+#pause{justify-content:center;background:#0a0618c8}
+.tag{letter-spacing:.3em;font-size:.85em;opacity:.85}
+.bd{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.aaaa{padding:4px 12px;border-radius:8px;font-weight:800;letter-spacing:.16em;background:linear-gradient(135deg,#ffd08a,#ff5f7a);color:#1a0b2a}
+.age{display:inline-grid;justify-items:center;line-height:1;padding:5px 10px;border:2px solid #fff;border-radius:8px}.age b{font-size:1.3em}.age small{font-size:.62em;letter-spacing:.14em}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}
+.b{padding:13px 30px;border-radius:99px;font-weight:700;letter-spacing:.12em;background:#ffffff1c;border:1px solid #ffffff44;backdrop-filter:blur(8px)}
+.b:hover{background:#ffffff33}.b.p{background:linear-gradient(135deg,#ffd08a,#ff5f7a);color:#1a0b2a;border:0}
+.nt{opacity:.72;font-size:.86em;max-width:64ch}
+#hud{position:fixed;inset:0;pointer-events:none;transition:opacity .3s}#hud.off{opacity:0}
+#spd{position:absolute;right:28px;bottom:24px;text-align:right;text-shadow:0 2px 12px #000a}
+#spd b{font:600 54px Georgia,serif;display:block;line-height:1}#spd small{letter-spacing:.3em;opacity:.85}
+#nit{position:absolute;right:28px;bottom:104px;width:180px;height:8px;border-radius:4px;background:#ffffff30;overflow:hidden}
+#nit i{display:block;height:100%;background:linear-gradient(90deg,#5be3ff,#ffd08a);transform-origin:left}
+#mis{position:absolute;left:24px;top:22px;text-shadow:0 2px 12px #000a}#mis small{letter-spacing:.3em;opacity:.85;display:block}#mis b{font-size:1.25em}
+#map{position:absolute;left:24px;bottom:24px;width:150px;height:150px;border-radius:50%;border:2px solid #fff6;background:#0a061899}
+#clk{position:absolute;right:28px;top:22px;letter-spacing:.2em;text-shadow:0 2px 12px #000a}
+#msg{position:absolute;left:50%;top:22%;transform:translateX(-50%);font:600 clamp(22px,4vw,40px) Georgia,serif;text-align:center;text-shadow:0 4px 24px #000;opacity:0;transition:opacity .4s;width:90%}#msg.on{opacity:1}
+#tc{position:fixed;inset:auto 0 18px;display:none;justify-content:space-between;padding:0 18px;pointer-events:none;z-index:5}
+@media(pointer:coarse){#tc{display:flex}#spd{bottom:110px}#nit{bottom:190px}#map{bottom:110px}}
+#tc div{display:flex;gap:10px;pointer-events:auto}#tc button{width:68px;height:68px;border-radius:50%;background:#ffffff26;border:1px solid #fff5;font-size:24px}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-label="Mythos Unbound game view"></canvas><div class="vg"></div>
+<div id="hud" class="off">
+ <div id="mis"><small>OBJECTIVE</small><b>Collect Mythos Shards <span id="cnt">0/12</span></b></div>
+ <div id="clk">6:00 PM</div>
+ <canvas id="map" width="150" height="150" aria-label="Minimap"></canvas>
+ <div id="nit" title="Nitro"><i></i></div>
+ <div id="spd"><b>0</b><small>KM/H</small></div>
+ <div id="msg" role="status"></div>
+</div>
+<div id="tc"><div><button data-k="a" aria-label="Steer left">◀</button><button data-k="d" aria-label="Steer right">▶</button></div><div><button data-k="shift" aria-label="Nitro">⚡</button><button data-k="s" aria-label="Brake">■</button><button data-k="w" aria-label="Accelerate">▲</button></div></div>
+<section id="title" class="scr">
+ <p class="tag">MYTHOS STUDIOS PRESENTS</p>
+ <h1>MYTHOS<br>UNBOUND</h1>
+ <div class="bd"><span class="aaaa">AAAA</span><span class="age" aria-label="Age rating: Teen, 13 and up"><b>13+</b><small>TEEN</small></span><span aria-label="Preview rating: 4.8 out of 5 stars">★★★★★ <b>4.8</b> / 5</span><span class="tag">COMING 2027</span></div>
+ <p class="nt">Solara Bay never sleeps. Chase the golden hour down the open coast and collect twelve Mythos Shards before the city wakes. Technical preview. Full game rated Teen 13+ for fantasy violence and online interactions.</p>
+ <div class="btns"><button class="b p" id="play">PLAY</button><button class="b" id="q1"></button><button class="b" id="s1"></button></div>
+ <p class="nt">W/S or arrows: drive. A/D: steer. Space: handbrake and drift. Shift: nitro. C: camera. T: time of day. R: reset car. M: mute. Esc: pause.</p>
+</section>
+<section id="pause" class="scr off">
+ <h1 style="font-size:clamp(34px,6vw,70px)">PAUSED</h1>
+ <div class="btns"><button class="b p" id="rs">RESUME</button><button class="b" id="q2"></button><button class="b" id="s2"></button><button class="b" id="rst">RESTART</button><button class="b" id="qt">TITLE</button></div>
+</section>
+<script>
+(function(){'use strict';
+const $=s=>document.querySelector(s),cv=$('#gl'),gl=cv.getContext('webgl',{antialias:true,powerPreference:'high-performance'});
+if(!gl){document.body.insertAdjacentHTML('beforeend','<p style="position:fixed;inset:0;display:grid;place-items:center;padding:30px;text-align:center;z-index:9;background:#0a0618">Mythos Unbound needs WebGL. Please use a current Chromium, Firefox or Safari browser.</p>');return}
+
+/* ---------- settings (safe localStorage) ---------- */
+const LS={g(k,d){try{const v=localStorage.getItem('mu.'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},s(k,v){try{localStorage.setItem('mu.'+k,JSON.stringify(v))}catch(e){}}};
+let Q=LS.g('q',1)?1:0,mute=!!LS.g('m',false),best=+LS.g('best',0)||0;
+
+/* ---------- shaders ---------- */
+const PR='#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n';
+const VS=`attribute vec3 p,n;uniform mat4 V;uniform vec3 P,S;uniform vec2 R;varying vec3 vW,vN;
+void main(){vec3 l=p*S;vec3 w=vec3(l.x*R.x+l.z*R.y,l.y,-l.x*R.y+l.z*R.x)+P;vW=w;vN=vec3(n.x*R.x+n.z*R.y,n.y,-n.x*R.y+n.z*R.x);gl_Position=V*vec4(w,1.);}`;
+const FS=PR+`varying vec3 vW,vN;uniform vec3 C,L,SC,AM,FC,CAM;uniform float K,FD,NT,TM,A;
+float H(vec2 q){return fract(sin(dot(q,vec2(12.9898,78.233)))*43758.5453);}
+void main(){
+ vec3 n=normalize(vN),V=normalize(CAM-vW),col=C,em=vec3(0.);float d=length(CAM-vW),sp=0.;
+ if(K==2.){
+  if(vW.x<-480.)discard;
+  vec2 m=mod(vW.xz+40.,80.)-40.;float rx=abs(m.x),rz=abs(m.y),ln=0.;
+  if(vW.x<-420.)col=vec3(.76,.68,.55)*(.9+.1*H(floor(vW.xz*.7)));
+  else if(rx<8.||rz<8.){
+   col=vec3(.07,.07,.1)*(.8+.4*H(floor(vW.xz*.6)));
+   if(rx<8.&&rz>=8.)ln=max(step(rx,.25)*step(fract(vW.z/9.),.5),step(abs(rx-7.2),.14));
+   if(rz<8.&&rx>=8.)ln=max(step(rz,.25)*step(fract(vW.x/9.),.5),step(abs(rz-7.2),.14));
+   col=mix(col,vec3(.95,.85,.6),ln);sp=.6;
+  }else if(rx<10.||rz<10.)col=vec3(.34,.32,.36);
+  else col=vec3(.17,.21,.17)*(.8+.4*H(floor(vW.xz*.8)));
+ }else if(K==1.){
+  if(abs(n.y)<.5){
+   vec2 g=vec2(vW.x+vW.z,vW.y)/vec2(3.,3.6),f=fract(g);
+   float w=step(.18,f.x)*step(f.x,.78)*step(.22,f.y)*step(f.y,.8),h=H(floor(g)+C.r*50.);
+   col=mix(col,vec3(.12,.16,.26),w*.85);em=w*step(1.-NT*.75-.07,h)*vec3(1.,.78,.45)*(1.+h);sp=w*.5;
+  }else col*=.7;
+  col*=mix(.55,1.,smoothstep(0.,16.,vW.y));
+ }else if(K==3.){
+  n=normalize(vec3(sin(vW.x*.13+TM)*.06+sin(vW.z*.31+TM*1.7)*.03,1.,cos(vW.z*.11+TM*1.1)*.06));
+  col=mix(vec3(.02,.1,.17),FC,pow(1.-max(dot(n,V),0.),3.));sp=1.;
+ }
+ vec3 lit;
+ if(K==4.)lit=C*1.6;
+ else{
+  lit=col*(AM*(.55+.45*n.y)+SC*max(dot(n,L),0.));
+  if(K==5.){lit+=FC*pow(1.-max(dot(n,V),0.),3.)*.35;sp=1.;}
+  lit+=SC*pow(max(dot(reflect(-L,n),V),0.),K==3.?90.:28.)*sp*(K==3.?2.5:.7);
+ }
+ float f=1.-exp(-d*d*FD*FD);
+ gl_FragColor=vec4(mix(lit+em,FC,f),A);
+}`;
+const SVS='attribute vec2 q;varying vec2 u;void main(){u=q;gl_Position=vec4(q,.9999,1.);}';
+const SFS=PR+`varying vec2 u;uniform vec3 CF,CR,CU,TOP,HOR,SD,SUN;uniform float AS,TH,NT,TM;
+void main(){
+ vec3 d=normalize(CF+CR*u.x*AS*TH+CU*u.y*TH);float y=d.y;
+ vec3 c=mix(HOR,TOP,pow(clamp(y,0.,1.),.45));c=mix(c,HOR*.6,1.-smoothstep(-.3,0.,y));
+ float s=max(dot(d,SD),0.);c+=SUN*(pow(s,900.)*4.+pow(s,10.)*.35+pow(s,3.)*.12);
+ vec2 g=d.xz/(abs(y)+.25);
+ float cl=smoothstep(.2,.8,sin(g.x*1.7+TM*.03)*.5+sin(g.y*2.3-TM*.02)*.5+.5)*step(0.,y)*(1.-smoothstep(.3,.6,y));
+ c=mix(c,HOR*1.1+SUN*.15,cl*.45);
+ c+=step(.9965,fract(sin(dot(floor(d.xz/(y+1.1)*140.),vec2(127.1,311.7)))*43758.5))*NT*step(0.,y);
+ gl_FragColor=vec4(c,1.);}`;
+function prog(v,f,at){const p=gl.createProgram();for(const[t,s]of[[gl.VERTEX_SHADER,v],[gl.FRAGMENT_SHADER,f]]){const h=gl.createShader(t);gl.shaderSource(h,s);gl.compileShader(h);gl.attachShader(p,h)}at.forEach((a,i)=>gl.bindAttribLocation(p,i,a));gl.linkProgram(p);return p}
+const P1=prog(VS,FS,['p','n']),P2=prog(SVS,SFS,['q']),U={},SU={};
+'V P S R C L SC AM FC CAM K FD NT TM A'.split(' ').forEach(n=>U[n]=gl.getUniformLocation(P1,n));
+'CF CR CU TOP HOR SD SUN AS TH NT TM'.split(' ').forEach(n=>SU[n]=gl.getUniformLocation(P2,n));
+
+/* ---------- unit cube (base-centred) and sky quad ---------- */
+const VD=[],ID=[];
+[[0,0,1,1,0,0,0,1,0],[0,0,-1,-1,0,0,0,1,0],[1,0,0,0,0,-1,0,1,0],[-1,0,0,0,0,1,0,1,0],[0,1,0,1,0,0,0,0,-1],[0,-1,0,1,0,0,0,0,1]].forEach((f,k)=>{
+ const[n0,n1,n2,t0,t1,t2,b0,b1,b2]=f;
+ [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([s,u])=>VD.push(n0/2+s*t0/2+u*b0/2,n1/2+s*t1/2+u*b1/2+.5,n2/2+s*t2/2+u*b2/2,n0,n1,n2));
+ ID.push(k*4,k*4+1,k*4+2,k*4,k*4+2,k*4+3)});
+const vb=gl.createBuffer(),ib=gl.createBuffer(),qb=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(VD),gl.STATIC_DRAW);
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(ID),gl.STATIC_DRAW);
+gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);gl.enableVertexAttribArray(1);
+gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
+
+/* ---------- math ---------- */
+const clamp=(v,a,b)=>Math.min(Math.max(v,a),b),ss=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x)};
+const mul=(a,b)=>{const o=new Float32Array(16);for(let i=0;i<4;i++)for(let j=0;j<4;j++)o[j*4+i]=a[i]*b[j*4]+a[4+i]*b[j*4+1]+a[8+i]*b[j*4+2]+a[12+i]*b[j*4+3];return o};
+const persp=(f,a,n,r)=>{const t=1/Math.tan(f/2),m=new Float32Array(16);m[0]=t/a;m[5]=t;m[10]=(r+n)/(n-r);m[11]=-1;m[14]=2*r*n/(n-r);return m};
+function look(e,c){let z=[e[0]-c[0],e[1]-c[1],e[2]-c[2]],l=Math.hypot(...z);z=z.map(v=>v/l);let x=[z[2],0,-z[0]];l=Math.hypot(...x);x=x.map(v=>v/l);
+ const y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];
+ return{x,y,z,m:new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-(x[0]*e[0]+x[1]*e[1]+x[2]*e[2]),-(y[0]*e[0]+y[1]*e[1]+y[2]*e[2]),-(z[0]*e[0]+z[1]*e[1]+z[2]*e[2]),1])}}
+const hs=(a,b,s)=>{let n=Math.imul(a|0,374761393)+Math.imul(b|0,668265263)+Math.imul(s|0,2147483647)|0;n=Math.imul(n^(n>>>13),1274126177);return((n^(n>>>16))>>>0)/4294967296};
+
+/* ---------- procedural city: roads every 80m, four lots per block ---------- */
+const BC=[[.62,.5,.55],[.4,.45,.62],[.7,.56,.46],[.34,.38,.48],[.75,.62,.6],[.3,.34,.52],[.55,.42,.5]],LC=new Map();
+function lots(cx,cz){const k=cx+','+cz;let l=LC.get(k);if(l)return l;l=[];
+ if(cx>-6){const ox=cx*80,oz=cz*80,hm=16+Math.max(0,1-Math.hypot(cx,cz)/9)*110;
+  for(let i=0;i<2;i++)for(let j=0;j<2;j++){const r=hs(cx,cz,i*2+j+1),r2=hs(cx,cz,i*2+j+9);
+   l.push({x:ox+23+i*34,z:oz+23+j*34,w:20+r2*6,d:20+hs(cx,cz,i*2+j+17)*6,h:r<.1?0:10+r*r*hm+r2*10,c:BC[(r2*BC.length)|0]})}}
+ if(LC.size>900)LC.clear();LC.set(k,l);return l}
+
+/* ---------- state ---------- */
+let state='title',T=0,H=17.4,cyaw=0,shake=0,shards=[],got=0,wave=1,runT=0,msgT=0,camMode=1,last=0;
+const car={x:0,z:20,yaw:0,vx:0,vz:0,nit:1,boost:false},keys={},TR=[],cam={x:0,y:5,z:-10};
+function mkShards(){shards=[];for(let t=0;shards.length<12&&t<300;t++){const cx=Math.floor(Math.random()*12)-5,cz=Math.floor(Math.random()*13)-6,al=Math.random()<.5,o=12+Math.random()*56,x=al?cx*80:cx*80+o,z=al?cz*80+o:cz*80;
+ if(Math.hypot(x-car.x,z-car.z)>120)shards.push({x,z})}}
+function resetCar(){Object.assign(car,{x:0,z:20,yaw:0,vx:0,vz:0,nit:1,boost:false});cyaw=0}
+function restart(){resetCar();got=0;wave=1;runT=0;mkShards();say('Collect the Mythos Shards')}
+function setTraffic(){const n=Q?12:6;while(TR.length<n){const t={};respawn(t,true);TR.push(t)}TR.length=n}
+function respawn(t,init){const ax=Math.random()<.5?0:1,dir=Math.random()<.5?1:-1,k=Math.round((ax?car.z:car.x)/80)+((Math.random()*5)|0)-2;
+ Object.assign(t,{ax,dir,rd:k*80,p:Math.max(-400,(ax?car.x:car.z)+(Math.random()-.5)*(init?500:640)),sp:9+Math.random()*7,col:BC[(Math.random()*BC.length)|0].map(v=>v*1.2)});if(ax)t.p=Math.max(-400,t.p)}
+
+/* ---------- sky / time of day ---------- */
+const PD={t:[.25,.5,.9],h:[.75,.85,.95],f:[.7,.8,.9],a:[.5,.55,.65],s:[1,.95,.85]},PK={t:[.3,.2,.52],h:[1,.52,.34],f:[.96,.5,.42],a:[.55,.38,.42],s:[1,.62,.3]},PN={t:[.02,.03,.1],h:[.09,.1,.24],f:[.07,.09,.2],a:[.13,.15,.3],s:[.35,.4,.7]};
+function sky(){const a=-Math.PI*(H+6)/12,x=-Math.cos(a),y=Math.sin(a),z=.3,l=Math.hypot(x,y,z),L=[x/l,y/l,z/l],wd=ss(.22,.55,L[1]),wn=1-ss(-.18,.04,L[1]),wk=Math.max(0,1-wd-wn);
+ const M=k=>PD[k].map((v,i)=>v*wd+PK[k][i]*wk+PN[k][i]*wn);return{L,t:M('t'),h:M('h'),f:M('f'),a:M('a'),s:M('s'),n:wn}}
+
+/* ---------- draw helpers ---------- */
+function box(x,y,z,sx,sy,sz,yaw,k,r,g,b,a){gl.uniform3f(U.P,x,y,z);gl.uniform3f(U.S,sx,sy,sz);gl.uniform2f(U.R,Math.cos(yaw),Math.sin(yaw));gl.uniform3f(U.C,r,g,b);gl.uniform1f(U.K,k);gl.uniform1f(U.A,a||1);gl.drawElements(gl.TRIANGLES,36,gl.UNSIGNED_SHORT,0)}
+function drawCar(x,z,yaw,c,me){const co=Math.cos(yaw),si=Math.sin(yaw);
+ const pt=(ox,oy,oz,sx,sy,sz,k,r,g,b)=>box(x+ox*co+oz*si,oy,z-ox*si+oz*co,sx,sy,sz,yaw,k,r,g,b);
+ pt(0,.45,0,2,.75,4.4,5,c[0],c[1],c[2]);pt(0,1.2,-.3,1.7,.6,2.2,5,.06,.08,.14);pt(0,1.2,-2,1.8,.14,.5,5,c[0]*.6,c[1]*.6,c[2]*.6);
+ for(const sx of[-1,1]){pt(sx*1.05,0,1.4,.35,.8,.9,0,.04,.04,.05);pt(sx*1.05,0,-1.4,.35,.8,.9,0,.04,.04,.05);pt(sx*.7,.7,2.2,.5,.2,.1,4,1,.95,.8);pt(sx*.7,.75,-2.2,.55,.18,.1,4,1,.1,.15)}
+ if(me&&car.boost)for(const sx of[-1,1])pt(sx*.5,.55,-2.6,.35,.35,1.2+Math.random()*.8,4,1,.55,.2)}
+function palm(x,z){box(x,0,z,.8,9,.8,0,0,.35,.25,.15);for(let i=0;i<3;i++)box(x,9,z,6,.5,1.4,i*1.047+x,0,.12,.4,.22)}
+function lamp(x,z){box(x,0,z,.35,9,.35,0,0,.2,.2,.24);box(x,9,z,1.6,.35,.6,0,4,1,.85,.5)}
+
+/* ---------- audio ---------- */
+let AC,eng,eg;
+function audio(){if(AC)return;try{AC=new(window.AudioContext||window.webkitAudioContext)();eng=AC.createOscillator();eng.type='sawtooth';const f=AC.createBiquadFilter();f.frequency.value=420;eg=AC.createGain();eg.gain.value=0;eng.connect(f);f.connect(eg);eg.connect(AC.destination);eng.start()}catch(e){AC=null}}
+function beep(fr,d,ty,v){if(!AC||mute)return;const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type=ty||'triangle';o.frequency.value=fr;g.gain.setValueAtTime(v||.12,t);g.gain.exponentialRampToValueAtTime(.001,t+(d||.12));o.connect(g);g.connect(AC.destination);o.start();o.stop(t+(d||.12))}
+
+/* ---------- HUD ---------- */
+const hud=$('#hud'),spdE=$('#spd b'),nitE=$('#nit i'),cntE=$('#cnt'),clkE=$('#clk'),msgE=$('#msg'),mc=$('#map').getContext('2d');
+function say(t){msgE.textContent=t;msgE.classList.add('on');msgT=2.6}
+function drawMap(){const f=[Math.sin(car.yaw),Math.cos(car.yaw)],r=[-f[1],f[0]],s=.17,c=75;
+ const pr=(x,z)=>{const dx=x-car.x,dz=z-car.z;return[c+(dx*r[0]+dz*r[1])*s,c-(dx*f[0]+dz*f[1])*s]};
+ mc.clearRect(0,0,150,150);mc.save();mc.beginPath();mc.arc(c,c,73,0,6.3);mc.clip();mc.strokeStyle='#ffffff40';mc.lineWidth=2;mc.beginPath();
+ const kx=Math.round(car.x/80),kz=Math.round(car.z/80);
+ for(let k=-5;k<=5;k++){let a=pr((kx+k)*80,car.z-450),b=pr((kx+k)*80,car.z+450);mc.moveTo(a[0],a[1]);mc.lineTo(b[0],b[1]);a=pr(car.x-450,(kz+k)*80);b=pr(car.x+450,(kz+k)*80);mc.moveTo(a[0],a[1]);mc.lineTo(b[0],b[1])}
+ mc.stroke();mc.fillStyle='#ffd08a';
+ for(const q of shards){let[x,y]=pr(q.x,q.z);const dx=x-c,dy=y-c,d=Math.hypot(dx,dy);if(d>66){x=c+dx/d*66;y=c+dy/d*66}mc.beginPath();mc.arc(x,y,d>66?3:4.5,0,6.3);mc.fill()}
+ mc.fillStyle='#fff';mc.beginPath();mc.moveTo(c,c-8);mc.lineTo(c+6,c+7);mc.lineTo(c-6,c+7);mc.fill();mc.restore()}
+
+/* ---------- physics & game logic ---------- */
+function bump(v){shake=Math.min(1,v/18);beep(90,.18,'sawtooth',.2)}
+function update(dt){
+ const k=keys,th=(k.w||k.arrowup?1:0)-(k.s||k.arrowdown?.6:0),st=(k.d||k.arrowright?1:0)-(k.a||k.arrowleft?1:0),hb=!!k[' '];
+ const ms=k.shift&&car.nit>.02&&th>0?1.45:1;car.boost=ms>1;car.nit=clamp(car.nit+(car.boost?-.35:.1)*dt,0,1);
+ let f=[Math.sin(car.yaw),Math.cos(car.yaw)],vf=car.vx*f[0]+car.vz*f[1];
+ car.yaw-=st*(1.75-Math.min(Math.abs(vf),40)/40*.95)*Math.min(Math.abs(vf)/6,1)*(vf<0?-1:1)*(hb?1.5:1)*dt;
+ f=[Math.sin(car.yaw),Math.cos(car.yaw)];const r=[-f[1],f[0]];
+ vf=car.vx*f[0]+car.vz*f[1];let vl=car.vx*r[0]+car.vz*r[1];
+ vf+=(th>0?30*ms*(1-Math.max(0,vf)/(46*ms)):th<0?32:0)*th*(th<0?-1:1)*dt*(th<0?-1:1);
+ if(!th)vf*=Math.exp(-.45*dt);if(hb)vf*=Math.exp(-.5*dt);
+ vf*=Math.exp(-.06*dt);vl*=Math.exp(-(hb?1.4:9)*dt);
+ car.vx=f[0]*vf+r[0]*vl;car.vz=f[1]*vf+r[1]*vl;car.x+=car.vx*dt;car.z+=car.vz*dt;
+ if(car.x<-465){car.x=-465;car.vx=Math.abs(car.vx)*.3}
+ const pcx=Math.floor(car.x/80),pcz=Math.floor(car.z/80);
+ for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)for(const L of lots(pcx+a,pcz+b)){if(!L.h)continue;
+  const nx=clamp(car.x,L.x-L.w/2,L.x+L.w/2),nz=clamp(car.z,L.z-L.d/2,L.z+L.d/2),dx=car.x-nx,dz=car.z-nz,d=Math.hypot(dx,dz);
+  if(d<2.2){if(d>1e-4){const ux=dx/d,uz=dz/d,vn=car.vx*ux+car.vz*uz;car.x=nx+ux*2.2;car.z=nz+uz*2.2;if(vn<0){car.vx-=1.5*vn*ux;car.vz-=1.5*vn*uz;bump(-vn)}}else car.x=L.x-L.w/2-3}}
+ for(const t of TR){t.p+=t.dir*t.sp*dt;const al=t.ax?car.x:car.z;if(Math.abs(t.p-al)>380)respawn(t);
+  t.x=t.ax?t.p:t.rd+t.dir*3.8;t.z=t.ax?t.rd+t.dir*3.8:t.p;t.yaw=t.ax?(t.dir>0?Math.PI/2:-Math.PI/2):(t.dir>0?0:Math.PI);
+  const dx=car.x-t.x,dz=car.z-t.z,d=Math.hypot(dx,dz);
+  if(d<4.4&&d>1e-4){const ux=dx/d,uz=dz/d,vn=car.vx*ux+car.vz*uz;car.x=t.x+ux*4.4;car.z=t.z+uz*4.4;if(vn<0){car.vx-=1.6*vn*ux;car.vz-=1.6*vn*uz;bump(-vn)}}}
+ for(let i=shards.length-1;i>=0;i--){const q=shards[i];if(Math.hypot(q.x-car.x,q.z-car.z)<6){shards.splice(i,1);got++;car.nit=1;beep(880,.15);setTimeout(()=>beep(1320,.2),90);
+  if(!shards.length){const m=Math.floor(runT/60),s=Math.floor(runT%60);say('All shards collected in '+m+':'+String(s).padStart(2,'0')+'. Chapter '+(++wave)+' begins.');if(!best||runT<best){best=runT;LS.s('best',best)}got=0;runT=0;mkShards()}else say('Shard collected  '+got+'/12')}}
+ runT+=dt;H=(H+dt*.012)%24;shake=Math.max(0,shake-dt*2.2);
+ if(msgT>0&&(msgT-=dt)<=0)msgE.classList.remove('on')}
+
+/* ---------- render ---------- */
+function resize(){const d=Math.min(window.devicePixelRatio||1,Q?2:1)*(Q?1:.8),w=Math.floor(innerWidth*d),h=Math.floor(innerHeight*d);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}}
+function render(dt){
+ const w=cv.width,h=cv.height,S=sky(),L=S.L,ld=[L[0],Math.max(L[1],.2),L[2]],ll=Math.hypot(...ld),sp=Math.hypot(car.vx,car.vz),fov=.95+Math.min(sp/60,1)*.2+(car.boost?.08:0);
+ gl.viewport(0,0,w,h);
+ let tg;
+ if(state==='title'){const o=T*.15;cam.x=car.x+Math.cos(o)*13;cam.z=car.z+Math.sin(o)*13;cam.y=3.2+Math.sin(T*.2)*.8;tg=[car.x,1.3,car.z]}
+ else{let d=car.yaw-cyaw;d=Math.atan2(Math.sin(d),Math.cos(d));cyaw+=d*Math.min(1,dt*3.2);const ds=camMode?9:6;
+  cam.x=car.x-Math.sin(cyaw)*ds+(Math.random()-.5)*shake;cam.z=car.z-Math.cos(cyaw)*ds+(Math.random()-.5)*shake;cam.y=3.4+(Math.random()-.5)*shake*.5;
+  tg=[car.x+Math.sin(cyaw)*5,1.6,car.z+Math.cos(cyaw)*5]}
+ const lk=look([cam.x,cam.y,cam.z],tg),VP=mul(persp(fov,w/h,.8,1600),lk.m),fx=-lk.z[0],fz=-lk.z[2],fl=Math.hypot(fx,fz)||1;
+ const vis=(x,z,r)=>((x-cam.x)*fx+(z-cam.z)*fz)/fl>-r;
+ gl.disable(gl.DEPTH_TEST);gl.useProgram(P2);gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+ gl.uniform3f(SU.CF,-lk.z[0],-lk.z[1],-lk.z[2]);gl.uniform3fv(SU.CR,lk.x);gl.uniform3fv(SU.CU,lk.y);gl.uniform3fv(SU.TOP,S.t);gl.uniform3fv(SU.HOR,S.h);gl.uniform3fv(SU.SD,L);gl.uniform3fv(SU.SUN,S.s);
+ gl.uniform1f(SU.AS,w/h);gl.uniform1f(SU.TH,Math.tan(fov/2));gl.uniform1f(SU.NT,S.n);gl.uniform1f(SU.TM,T);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+ gl.enable(gl.DEPTH_TEST);gl.clear(gl.DEPTH_BUFFER_BIT);gl.useProgram(P1);
+ gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.vertexAttribPointer(0,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(1,3,gl.FLOAT,false,24,12);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);
+ gl.uniformMatrix4fv(U.V,false,VP);gl.uniform3f(U.L,ld[0]/ll,ld[1]/ll,ld[2]/ll);gl.uniform3f(U.SC,S.s[0]*.85,S.s[1]*.85,S.s[2]*.85);gl.uniform3fv(U.AM,S.a);gl.uniform3fv(U.FC,S.f);gl.uniform3f(U.CAM,cam.x,cam.y,cam.z);
+ gl.uniform1f(U.FD,.0026*(1+S.n*.4));gl.uniform1f(U.NT,S.n);gl.uniform1f(U.TM,T);
+ box(cam.x,-1,cam.z,3000,.6,3000,0,3,0,0,0);
+ box(Math.round(cam.x/80)*80,-1,Math.round(cam.z/80)*80,1400,1,1400,0,2,0,0,0);
+ const ccx=Math.floor(cam.x/80),ccz=Math.floor(cam.z/80),R=Q?4:3;
+ for(let a=-R;a<=R;a++)for(let b=-R;b<=R;b++){const cx=ccx+a,cz=ccz+b,ox=cx*80,oz=cz*80;if(cx<-6||!vis(ox+40,oz+40,70))continue;
+  for(const q of lots(cx,cz)){
+   if(!q.h){palm(q.x-5,q.z-4);palm(q.x+6,q.z+5);continue}
+   box(q.x,0,q.z,q.w,q.h,q.d,0,1,q.c[0],q.c[1],q.c[2]);
+   if(q.h>70){box(q.x,q.h,q.z,.6,8,.6,0,0,.3,.3,.3);box(q.x,q.h+8,q.z,1.2,1.2,1.2,0,4,1,.1,.1)}}
+  palm(ox+40,oz+9);palm(ox+9,oz+40);lamp(ox+9,oz+9);lamp(ox+71,oz+71)}
+ for(const t of TR)if(t.x!==undefined&&vis(t.x,t.z,12))drawCar(t.x,t.z,t.yaw,t.col,false);
+ drawCar(car.x,car.z,car.yaw,[.88,.14,.3],true);
+ gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE);gl.depthMask(false);
+ for(const q of shards){const y=2.6+Math.sin(T*2+q.x)*.4;box(q.x,y,q.z,1.7,1.7,1.7,T*1.4,4,1,.8,.35);box(q.x,y,q.z,1.7,1.7,1.7,T*1.4+.785,4,1,.5,.7);box(q.x,0,q.z,2.2,170,2.2,0,4,1,.5,.7,.2)}
+ gl.depthMask(true);gl.disable(gl.BLEND)}
+
+/* ---------- loop ---------- */
+function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-last)/1000||.016,.05);last=now;resize();
+ if(state==='play'){update(dt)}else{T+=0;for(const t of TR)if(t.x===undefined){t.x=0;t.z=0;t.yaw=0}}
+ T+=dt;render(dt);
+ if(state!=='title'){const v=Math.round(Math.hypot(car.vx,car.vz)*3.6);if(spdE.textContent!==String(v))spdE.textContent=v;nitE.style.transform='scaleX('+car.nit+')';cntE.textContent=got+'/12';
+  const hh=Math.floor(H),m=Math.floor((H-hh)*60);clkE.textContent=((hh+11)%12+1)+':'+String(m).padStart(2,'0')+(hh>=12?' PM':' AM');drawMap()}
+ if(eg){eg.gain.value=mute||state!=='play'?0:.045+.04*Math.min(1,Math.hypot(car.vx,car.vz)/40);eng.frequency.value=46+Math.hypot(car.vx,car.vz)*2.6}}
+
+/* ---------- screens & input ---------- */
+const scr={title:$('#title'),pause:$('#pause')};
+function labels(){$('#q1').textContent=$('#q2').textContent='GRAPHICS: '+(Q?'HIGH':'LOW');$('#s1').textContent=$('#s2').textContent='SOUND: '+(mute?'OFF':'ON')}
+function go(s){state=s;scr.title.classList.toggle('off',s!=='title');scr.pause.classList.toggle('off',s!=='pause');hud.classList.toggle('off',s==='title');
+ const f=s==='title'?$('#play'):s==='pause'?$('#rs'):null;if(f)f.focus({preventScroll:true})}
+function start(){audio();if(AC&&AC.state==='suspended')AC.resume();go('play');say('Collect the Mythos Shards')}
+function togQ(){Q=Q?0:1;LS.s('q',Q);labels();setTraffic()}
+function togM(){mute=!mute;LS.s('m',mute);labels()}
+$('#play').onclick=start;$('#rs').onclick=()=>go('play');$('#rst').onclick=()=>{restart();go('play')};$('#qt').onclick=()=>{restart();go('title')};
+$('#q1').onclick=$('#q2').onclick=togQ;$('#s1').onclick=$('#s2').onclick=togM;
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=1;if(k===' '||k.startsWith('arrow'))e.preventDefault();
+ if(state==='play'){if(k==='c')camMode^=1;else if(k==='t'){H=(H+3)%24;say('Time of day changed')}else if(k==='r')resetCar();else if(k==='m')togM();else if(k==='escape'||k==='p')go('pause')}
+ else if(state==='pause'&&(k==='escape'||k==='p'))go('play');
+ else if(state==='title'&&k==='enter'&&document.activeElement===document.body)start()});
+addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=0});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=0;if(state==='play')go('pause')});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='play')go('pause')});
+document.querySelectorAll('#tc button').forEach(b=>{const k=b.dataset.k,on=e=>{e.preventDefault();keys[k]=1},off=()=>{keys[k]=0};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off)});
+cv.addEventListener('webglcontextlost',e=>{e.preventDefault();document.body.insertAdjacentHTML('beforeend','<p style="position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:30px;z-index:9;background:#0a0618">The graphics context was lost. Reload the page to continue.</p>')});
+
+/* ---------- boot ---------- */
+labels();mkShards();setTraffic();go('title');requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
