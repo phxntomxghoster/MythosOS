@@ -4,589 +4,379 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
-<title>MythosOS</title>
+<title>MythosOS 0.2</title>
 <style>
-@property --h{syntax:'<number>';inherits:true;initial-value:200}
-:root{--bg:#0a1316;--s:#12212a;--s2:#1b313c;--t:#e8eef0;--m:#93a8b1;--a:#e8a45a;--ai:#1a1206;--b:#ffffff24;--sh:0 14px 44px #0009;--d:.24s}
+:root{--bg:#0a1316;--s:#12212a;--s2:#1b313c;--t:#e8eef0;--m:#93a8b1;--a:#e8a45a;--ai:#1a1206;--b:#ffffff24;--sh:0 14px 44px #0009;--bar:52px;--d:.2s}
 :root[data-theme=light]{--bg:#eef1ec;--s:#fbfcfa;--s2:#e1e7df;--t:#14201c;--m:#556760;--a:#a85512;--ai:#fff;--b:#00000026;--sh:0 14px 44px #0003}
 :root[data-theme=midnight]{--bg:#0b0e24;--s:#141a3d;--s2:#1f2756;--t:#e9ecff;--m:#97a0d6;--a:#8aa2ff;--ai:#06102e}
 :root[data-theme=aurora]{--bg:#06141a;--s:#0d2a2c;--s2:#14403d;--t:#e6fbf3;--m:#86b9aa;--a:#5be3b0;--ai:#03140e}
 :root[data-theme=graphite]{--bg:#161616;--s:#222;--s2:#2e2e2e;--t:#eee;--m:#9a9a9a;--a:#cfd4dc;--ai:#111}
 :root[data-theme=nebula]{--bg:#150b26;--s:#241240;--s2:#33195c;--t:#f3e9ff;--m:#b49bd6;--a:#d58bff;--ai:#1d0a30}
-:root[data-anim="1"]{--d:.08s}:root[data-anim="0"]{--d:0s}:root[data-perf]{--d:.06s}
+:root[data-motion=off]{--d:0s}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font:14px/1.45 system-ui,"Segoe UI Variable Text","SF Pro Text",Inter,Roboto,sans-serif;background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased}
+body{font:14px/1.45 system-ui,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--t)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer;text-align:inherit}
 button:disabled{opacity:.4;cursor:default}
-input,select,textarea{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:8px 11px;min-width:0}
+input,select,textarea{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:8px 10px;min-width:0}
 :focus-visible{outline:2px solid var(--a);outline-offset:2px}
-h1,h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:600}
-h2{font-size:1.05em;margin:26px 0 10px}h3{margin:18px 0 8px;font-size:1.2em}p+p{margin-top:8px}
-.i{width:1.3em;height:1.3em;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.sp{flex:1}.nt2{color:var(--m);font-size:.85em}
-kbd{font:inherit;font-size:.8em;padding:2px 7px;border-radius:6px;background:var(--s2);border:1px solid var(--b);color:var(--m);margin-left:auto}
-#os{position:fixed;inset:0;--top:56px;--bot:76px}
-#os[data-mode=desktop]{--top:0px}
-#wall{position:fixed;inset:0;background:var(--wall,var(--bg))}
-#wall::after{content:"";position:absolute;inset:0;transition:opacity var(--d);background:linear-gradient(90deg,var(--bg),#0000 75%),linear-gradient(0deg,var(--bg),#0000 55%)}
-#os[data-mode=desktop] #wall::after{opacity:0}
-#top{position:fixed;inset:0 0 auto;min-height:56px;display:flex;align-items:center;gap:14px;padding:6px 20px;z-index:50;transition:opacity var(--d),transform var(--d)}
-#os[data-mode=desktop] #top{opacity:0;transform:translateY(-100%);pointer-events:none;visibility:hidden}
-.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.22em;font-size:.86em}
-.mk{display:block;width:20px;height:20px;rotate:45deg;border-radius:6px;background:conic-gradient(from 90deg,var(--a),#fff6,var(--a));box-shadow:inset 0 0 0 5px var(--bg)}
-.nav{display:flex;gap:4px;margin-left:10px}
-.tab{padding:8px 14px;border-radius:99px;color:var(--m);font-weight:600;font-size:.86em;letter-spacing:.08em;position:relative}
-.tab:hover{color:var(--t)}.tab[aria-current=page]{color:var(--t);background:var(--s2)}
-.tab[aria-current=page]::after{content:"";position:absolute;left:30%;right:30%;bottom:3px;height:2px;border-radius:2px;background:var(--a)}
-#tray{display:flex;align-items:center;gap:6px}
-.tb{position:relative;display:grid;place-items:center;min-width:40px;height:40px;border-radius:12px;padding:0 8px}.tb:hover{background:var(--s2)}
-.bdg{position:absolute;top:3px;right:3px;min-width:16px;height:16px;border-radius:8px;background:var(--a);color:var(--ai);font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px}
-#clk{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;padding:0 8px;font-variant-numeric:tabular-nums;font-size:.86em}#clk small{color:var(--m)}
-.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--a),#6b4bd0);color:var(--ai);font-weight:700;display:grid;place-items:center}
-.ap{width:44px;height:44px;border-radius:28%;display:grid;place-items:center;color:#fff;flex:none;background:linear-gradient(135deg,hsl(var(--h) 70% 55%),hsl(calc(var(--h) + 40) 60% 30%))}
-#home{position:fixed;inset:var(--top) 0 0;overflow-y:auto;padding:12px clamp(16px,4vw,56px) 110px;z-index:10;transition:opacity var(--d),transform var(--d)}
-#os[data-mode=desktop] #home{opacity:0;transform:scale(.985);visibility:hidden;pointer-events:none;transition:opacity var(--d),transform var(--d),visibility 0s var(--d)}
-#hero{--h:28;position:relative;color:#fff;min-height:min(46vh,420px);display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between;padding:clamp(20px,4vw,44px);border-radius:28px;overflow:hidden;border:1px solid var(--b);transition:--h .7s;background:radial-gradient(70% 120% at 85% 20%,hsl(var(--h) 70% 45%/.55),transparent 70%),linear-gradient(135deg,hsl(var(--h) 45% 14%),hsl(var(--h) 40% 8%))}
-.hc{max-width:560px;animation:fade var(--d) backwards}.tg{opacity:.8}
-#hero h1{font-size:clamp(34px,6vw,64px);line-height:1.02;margin:6px 0 12px}.hd{max-width:46ch;opacity:.88}
-.hb{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.pb,.sb{padding:10px 20px;border-radius:99px;font-weight:700;display:inline-flex;align-items:center;gap:8px;justify-content:center}
-.pb{background:var(--a);color:var(--ai)}.sb{background:var(--s2);border:1px solid var(--b)}.sb[aria-pressed=true] .i{fill:currentColor}
-#hero .sb{background:#ffffff22;color:#fff}
-.fs{display:flex;gap:10px;flex-wrap:wrap}
-.fc{width:140px;padding:10px;border-radius:16px;background:#0006;border:1px solid #ffffff22;color:#fff;font-size:.86em}
-.fc[aria-selected=true]{background:#ffffff26;outline:2px solid #fff;font-weight:700}
-.qa{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.pill{padding:8px 15px;border-radius:99px;background:var(--s);border:1px solid var(--b);display:inline-flex;gap:8px;align-items:center}.pill:hover{border-color:var(--a)}
-.row{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x proximity;padding:8px 4px 16px;margin:0 -4px;scrollbar-width:thin}
-.card{position:relative;flex:none;width:200px;scroll-snap-align:start;border-radius:20px;background:var(--s);border:1px solid var(--b);transition:transform var(--d),box-shadow var(--d),border-color var(--d)}
-.card.lg{width:320px}.card:hover,.card:focus-within{transform:translateY(-4px) scale(1.02);box-shadow:var(--sh);border-color:var(--a)}
-.cb{display:block;width:100%;border-radius:inherit}.cb:focus-visible{outline-offset:-3px}
-.art{aspect-ratio:16/10;border-radius:19px 19px 0 0;display:grid;place-items:center;background:radial-gradient(80% 90% at 70% 10%,hsl(var(--h) 80% 60%/.8),transparent),linear-gradient(135deg,hsl(var(--h) 55% 32%),hsl(calc(var(--h) + 50) 50% 14%))}
-.art span{font:700 clamp(34px,5vw,54px) Georgia,serif;color:#fff;opacity:.9}
-.ci{padding:10px 14px 14px}.ci small{display:flex;justify-content:space-between;color:var(--m)}
-.fv{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:#000a;color:#fff;display:grid;place-items:center}
-.fv[aria-pressed=true]{background:var(--a);color:var(--ai)}.fv[aria-pressed=true] .i{fill:currentColor}
-.card.app{width:150px;padding:16px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}.card.app small{color:var(--m)}
-.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.stt{padding:14px 16px;border-radius:16px;background:var(--s);border:1px solid var(--b);display:flex;flex-direction:column}.stt small{color:var(--m)}.stt b{font-size:1.2em}
-#desk{position:fixed;inset:0 0 80px;padding:18px;display:grid;grid-auto-flow:column;grid-template-rows:repeat(auto-fill,98px);grid-auto-columns:96px;gap:6px;align-content:start;justify-content:start;z-index:5;transition:opacity var(--d)}
-#os[data-mode=home] #desk{opacity:0;visibility:hidden;pointer-events:none}
-.di{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:12px;color:#fff;text-shadow:0 1px 4px #000c;font-size:.8em;text-align:center;overflow:hidden;word-break:break-word}
-.di:hover{background:#ffffff1a}.di.pick{background:#ffffff33;outline:1px solid #fff9}
-.di .ap{width:46px;height:46px}
-#wins{position:fixed;inset:0;z-index:20;pointer-events:none}
-.win{position:absolute;pointer-events:auto;display:flex;flex-direction:column;background:var(--s);border:1px solid var(--b);border-radius:16px;box-shadow:0 8px 30px #0006;overflow:hidden;container-type:inline-size;animation:pop var(--d) backwards;min-width:300px;min-height:200px}
-.win.on{box-shadow:var(--sh);border-color:color-mix(in srgb,var(--a) 55%,var(--b))}.win.min{display:none}
-.win.out{opacity:0;transform:scale(.96);transition:var(--d)}
-.win.max{left:0!important;top:var(--top)!important;width:100%!important;height:calc(100% - var(--top) - var(--bot))!important;border-radius:0}
-.wt{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 12px;background:var(--s2);touch-action:none;user-select:none;cursor:grab}
-.win:not(.on) .wt{opacity:.7}
-.wt .ap{width:24px;height:24px;border-radius:7px}.wt .ap .i{width:15px;height:15px}
-.wt b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wt button{width:30px;height:28px;border-radius:8px;display:grid;place-items:center}.wt button:hover{background:var(--b)}.wt [data-w=x]:hover{background:#d24;color:#fff}
-.wb{flex:1;min-height:0;overflow:auto}
-.rs{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;touch-action:none;background:linear-gradient(135deg,transparent 55%,var(--m) 55% 62%,transparent 62% 76%,var(--m) 76% 83%,transparent 83%)}.win.max .rs{display:none}
-@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}}@keyframes fade{from{opacity:0;transform:translateY(6px)}}
-#dock{position:fixed;bottom:10px;left:10px;right:10px;height:62px;display:flex;align-items:center;gap:6px;padding:0 10px;z-index:60;background:color-mix(in srgb,var(--s) 88%,transparent);border:1px solid var(--b);border-radius:20px;box-shadow:var(--sh);backdrop-filter:blur(16px);transition:transform var(--d)}
-#os[data-mode=home] #dock{left:50%;right:auto;translate:-50% 0;max-width:calc(100vw - 20px)}
-#os[data-mode=home][data-run="0"] #dock{transform:translateY(140%)}
-#dapps{flex:1;display:flex;gap:6px;align-items:center;overflow-x:auto;min-width:0;padding:4px}
-.dk{position:relative;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;flex:none}.dk:hover,.dk.on{background:var(--s2)}.dk .ap{width:36px;height:36px}
-.dk.run::after{content:"";position:absolute;bottom:1px;left:50%;width:6px;height:4px;margin-left:-3px;border-radius:2px;background:var(--m)}
-.dk.on::after{width:18px;margin-left:-9px;background:var(--a)}.dk.mn .ap{opacity:.55}
-.ov{position:fixed;inset:0;z-index:100;opacity:0;visibility:hidden;display:flex;transition:opacity var(--d),visibility 0s var(--d)}
-.ov.show{opacity:1;visibility:visible;transition:opacity var(--d)}
-#lau{background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(22px);justify-content:center;align-items:flex-start;padding:8vh 16px 16px}
-#pal{background:#0006;justify-content:center;align-items:flex-start;padding:12vh 16px}
-#swt{background:#0007;align-items:center;justify-content:center;z-index:110}
-.pn{background:var(--s);border:1px solid var(--b);border-radius:22px;box-shadow:var(--sh);padding:16px;max-height:calc(100vh - 24px);overflow:auto;width:min(760px,100%);transform:translateY(10px) scale(.98);transition:transform var(--d)}
-.ov.show .pn{transform:none}#pal .pn{width:min(560px,100%)}
-.pp{justify-content:flex-end;align-items:flex-start;padding:62px 14px}.pp .pn{width:min(380px,100%)}
-#os[data-mode=desktop] .pp{align-items:flex-end;padding:14px 14px 84px}
-.qb{display:flex;align-items:center;gap:10px;background:var(--s2);border-radius:16px;padding:4px 14px}.qb:focus-within{outline:2px solid var(--a)}
-.qb input{flex:1;border:0;background:none;padding:12px 0;font-size:1.15em;outline:none}
-.gt{font-size:.8em;color:var(--m);margin:16px 8px 6px;font-weight:600}
-.res{display:flex;align-items:center;gap:12px;width:100%;padding:9px 10px;border-radius:14px}.res small{display:block;color:var(--m)}
-.res:hover,.res.sel{background:var(--s2)}.res.sel{box-shadow:inset 3px 0 var(--a)}.res .ap{width:36px;height:36px}
-.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px}
-.emp{color:var(--m);padding:30px 16px;text-align:center;grid-column:1/-1}
-.tg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tile{display:flex;flex-direction:column;gap:2px;padding:14px;border-radius:16px;background:var(--s2);min-height:84px}.tile .i{margin-bottom:6px}.tile small{opacity:.8}
-.tile[aria-pressed=true]{background:var(--a);color:var(--ai)}
-.nt{display:flex;gap:12px;padding:12px;border-radius:14px;background:var(--s2);margin-top:8px;position:relative;animation:pop var(--d) backwards}
-.nt .ap{width:34px;height:34px}.nt b{display:block}.nt small{display:block;color:var(--m)}
-.nt.un::before{content:"New";position:absolute;top:10px;right:44px;font-size:.72em;font-weight:700;color:var(--a)}
-.nt .x{margin-left:auto;align-self:flex-start;width:28px;height:28px;border-radius:8px;display:grid;place-items:center}
-.sws{display:flex;gap:12px;padding:16px;background:var(--s);border:1px solid var(--b);border-radius:24px;box-shadow:var(--sh);max-width:calc(100vw - 24px);overflow-x:auto}
-.swi{width:150px;padding:12px;border-radius:16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;flex:none}
-.swi[aria-current=true]{background:var(--s2);outline:2px solid var(--a)}.swi small{color:var(--m);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#toasts{position:fixed;top:64px;right:16px;z-index:130;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:min(340px,calc(100vw - 32px))}
-.toast{display:flex;gap:10px;padding:12px 14px;border-radius:16px;background:var(--s);border:1px solid var(--b);box-shadow:var(--sh);animation:pop var(--d) backwards,tout var(--d) 4s forwards}.toast .ap{width:34px;height:34px}.toast small{color:var(--m)}
-@keyframes tout{to{opacity:0;transform:translateY(-8px)}}
-#cm{position:fixed;z-index:140;min-width:210px;padding:6px;border-radius:14px;background:var(--s);border:1px solid var(--b);box-shadow:var(--sh);display:none}
-#cm.show{display:block;animation:pop var(--d)}#cm button{display:block;width:100%;padding:8px 12px;border-radius:9px}#cm button:hover,#cm button:focus-visible{background:var(--s2)}#cm hr{border:0;border-top:1px solid var(--b);margin:5px 4px}
-dialog{margin:auto;background:var(--s);color:var(--t);border:1px solid var(--b);border-radius:20px;padding:22px;box-shadow:var(--sh);width:min(420px,calc(100vw - 32px))}
-dialog::backdrop{background:#0008}dialog input{width:100%;margin-top:10px}
-#boot{position:fixed;inset:0;z-index:200;background:var(--bg);display:grid;place-content:center;justify-items:center;text-align:center;gap:12px;transition:opacity .5s .2s,visibility 0s .7s}
-#boot.off{opacity:0;visibility:hidden}#boot h1{letter-spacing:.3em;font-size:1.8em}#boot .mk{width:34px;height:34px}
-.ar,.se{display:flex;height:100%}
-.side{width:178px;flex:none;border-right:1px solid var(--b);padding:10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
-.si{padding:9px 12px;border-radius:10px;color:var(--m)}.si:hover{background:var(--s2);color:var(--t)}.si.on{background:var(--s2);color:var(--t);box-shadow:inset 3px 0 var(--a);font-weight:600}
-.main{flex:1;min-width:0;overflow-y:auto;padding:16px}
-.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px;margin-top:14px}.gr .card{width:auto}
-.dt{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;margin-top:14px}.dt .art{border-radius:20px}
-.tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tags span{padding:3px 10px;border-radius:99px;background:var(--s2);font-size:.85em}
-@container (max-width:620px){.ar,.se{flex-direction:column}.side{width:auto;flex-direction:row;border-right:0;border-bottom:1px solid var(--b);overflow-x:auto;overflow-y:hidden}.si{white-space:nowrap}.si.on{box-shadow:inset 0 -3px var(--a)}.dt{grid-template-columns:1fr}}
-.fl{display:flex;flex-direction:column;height:100%}
-.tbr{display:flex;gap:8px;padding:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--b)}
-.crumbs{display:flex;align-items:center;gap:2px;flex:1;min-width:140px;overflow-x:auto;white-space:nowrap}.crumbs button{padding:6px 9px;border-radius:8px}.crumbs button:hover{background:var(--s2)}.crumbs button:last-child{font-weight:700}
-.fbody{flex:1;overflow:auto;padding:12px;display:grid;gap:8px;align-content:start}
-.fbody.grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
-.fi{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:14px;text-align:center;word-break:break-word;border:1px solid transparent}
-.fbody.list .fi{flex-direction:row;text-align:left;padding:8px 12px}.fi:hover,.fi.pick{background:var(--s2)}.fi.pick{border-color:var(--a)}
-.fi .i{width:2.2em;height:2.2em;color:var(--a)}.fbody.list .fi .i{width:1.4em;height:1.4em}.fi small{color:var(--m);margin-left:auto}
-.ta{flex:1;border:0;border-radius:0;resize:none;width:100%;padding:14px;font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--s)}
-.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.op{padding:10px;border-radius:14px;background:var(--s2);border:2px solid transparent;display:flex;flex-direction:column;gap:6px}
-.op[aria-pressed=true]{border-color:var(--a)}.op[aria-pressed=true]::after{content:"Selected";font-size:.75em;font-weight:700;color:var(--a)}
-.sw{height:44px;border-radius:9px;border:1px solid var(--b)}
-.rw{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--b)}.rw small{display:block;color:var(--m)}
-.sx{width:46px;height:26px;border-radius:13px;background:var(--s2);border:1px solid var(--b);position:relative;vertical-align:middle}
-.sx::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--m);transition:transform var(--d)}
-.sx[aria-checked=true]{background:var(--a)}.sx[aria-checked=true]::after{transform:translateX(20px);background:var(--ai)}
-.g{color:var(--a)}.w{color:#e5484d}.g .i,.w .i{vertical-align:-.3em}
-.ch{display:flex;flex-direction:column;height:100%;padding:12px;gap:10px}
-.msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px}
-.mg{max-width:85%;padding:10px 14px;border-radius:18px;white-space:pre-wrap;animation:pop var(--d) backwards}
-.mg.u{align-self:flex-end;background:var(--a);color:var(--ai);border-bottom-right-radius:6px}.mg.a{align-self:flex-start;background:var(--s2);border-bottom-left-radius:6px}
-.sug{display:flex;gap:6px;flex-wrap:wrap}.cin{display:flex;gap:8px}.cin input{flex:1}
-.gm{display:flex;flex-direction:column;height:100%}.ga{flex:1;position:relative;overflow:hidden;background:radial-gradient(hsl(var(--h) 60% 30%),var(--s))}
-.bc{position:absolute;left:40%;top:40%;width:56px;height:56px;border-radius:50%;background:var(--a);box-shadow:0 0 0 8px #fff2;transition:left var(--d),top var(--d)}
-@media(max-width:720px){
-#top{flex-wrap:wrap;padding:6px 12px}.nav{order:3;width:100%;margin:0;overflow-x:auto}#os[data-mode=home]{--top:104px}#clk small{display:none}
-.win{left:0!important;top:var(--top)!important;width:100%!important;height:calc(100% - var(--top) - var(--bot))!important;border-radius:0}.rs{display:none}
-.card.lg{width:260px}}
-@media(prefers-reduced-motion:reduce){:root,:root[data-anim]{--d:.01s}}
-:root[data-perf] *{backdrop-filter:none!important;box-shadow:none!important}
+.sp{flex:1}.m{color:var(--m)}.sm{font-size:.85em}
+.ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex:none;background:var(--c,#444)}
+.pb,.sb{padding:8px 16px;border-radius:99px;font-weight:600;display:inline-flex;gap:8px;align-items:center}
+.pb{background:var(--a);color:var(--ai)}.sb{background:var(--s2);border:1px solid var(--b)}
+[hidden]{display:none!important}
+
+/* Desktop */
+#wall{position:fixed;inset:0 0 var(--bar);background:var(--wall,#0a1316);transition:background var(--d)}
+#icons{position:fixed;inset:0 0 var(--bar);padding:16px;display:grid;grid-template-rows:repeat(auto-fill,96px);grid-auto-flow:column;grid-auto-columns:96px;align-content:start;gap:6px}
+.di{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:12px;color:#fff;text-shadow:0 1px 4px #000c;font-size:12px;text-align:center;word-break:break-word}
+.di:hover,.di:focus-visible{background:#ffffff1f}
+
+/* Windows */
+#wins{position:fixed;inset:0 0 var(--bar);pointer-events:none}
+.win{position:absolute;pointer-events:auto;display:flex;flex-direction:column;background:var(--s);border:1px solid var(--b);border-radius:14px;box-shadow:var(--sh);overflow:hidden;min-width:300px;min-height:200px;transition:left var(--d),top var(--d),width var(--d),height var(--d)}
+.win:not(.on) .wt{opacity:.65}
+.win.on{border-color:color-mix(in srgb,var(--a) 55%,var(--b))}
+.win[hidden]{display:none}
+.wt{display:flex;align-items:center;gap:10px;padding:6px 8px 6px 10px;background:var(--s2);cursor:grab;user-select:none;touch-action:none}
+.wt .ico{width:24px;height:24px;font-size:13px;border-radius:7px}
+.wt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.wt button{width:28px;height:26px;border-radius:7px;font-size:15px}.wt button:hover{background:var(--b)}
+.wt [data-w=x]:hover{background:#d24;color:#fff}
+.wb{flex:1;min-height:0;overflow:auto;position:relative}
+.rs{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;touch-action:none}
+
+/* Taskbar */
+#bar{position:fixed;inset:auto 0 0 0;height:var(--bar);display:flex;align-items:center;gap:8px;padding:0 10px;background:color-mix(in srgb,var(--s) 90%,transparent);border-top:1px solid var(--b);backdrop-filter:blur(14px);z-index:50}
+#start{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:var(--ai);background:var(--a)}
+#tasks{flex:1;display:flex;gap:6px;overflow-x:auto;min-width:0}
+.tk{position:relative;height:40px;min-width:40px;padding:0 10px;border-radius:12px;display:flex;align-items:center;gap:8px;max-width:180px}
+.tk:hover{background:var(--s2)}.tk.on{background:var(--s2)}
+.tk span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk.run::after{content:"";position:absolute;bottom:2px;left:50%;width:14px;margin-left:-7px;height:3px;border-radius:2px;background:var(--a)}
+#clk{font-variant-numeric:tabular-nums;text-align:right;font-size:12px;line-height:1.2;padding:0 6px;color:var(--m)}
+#clk b{display:block;color:var(--t);font-size:13px}
+
+/* Overlays */
+.ov{position:fixed;inset:0;z-index:100;background:#0006;display:flex;align-items:flex-start;justify-content:center;padding-top:12vh}
+.pn{background:var(--s);border:1px solid var(--b);border-radius:18px;box-shadow:var(--sh);width:min(560px,calc(100vw - 24px));max-height:70vh;display:flex;flex-direction:column;overflow:hidden}
+.qb{padding:12px 14px;border:0;border-bottom:1px solid var(--b);border-radius:0;width:100%;font-size:1.05em}
+#lr{overflow:auto;padding:6px}
+.res{display:flex;gap:12px;align-items:center;width:100%;padding:8px 10px;border-radius:12px}
+.res:hover,.res.sel{background:var(--s2)}
+.res small{display:block;color:var(--m)}
+#ctx{position:fixed;z-index:120;min-width:200px;padding:6px;border-radius:12px;background:var(--s);border:1px solid var(--b);box-shadow:var(--sh)}
+#ctx button{display:block;width:100%;padding:8px 12px;border-radius:8px}#ctx button:hover,#ctx button:focus-visible{background:var(--s2)}
+#toasts{position:fixed;top:14px;right:14px;z-index:130;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--s);border:1px solid var(--b);box-shadow:var(--sh);max-width:340px;animation:in .2s}
+@keyframes in{from{opacity:0;transform:translateY(-6px)}}
+
+/* App content */
+.pad{padding:16px}
+h2{font-size:1.1em;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.card{padding:14px;border-radius:14px;background:var(--s2);display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--b)}
+.toolbar{display:flex;gap:8px;align-items:center;padding:10px;border-bottom:1px solid var(--b);flex-wrap:wrap}
+.crumb{padding:4px 8px;border-radius:8px}.crumb:hover{background:var(--s2)}
+.list{display:flex;flex-direction:column}
+.item{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;text-align:left}
+.item:hover{background:var(--s2)}
+.tog{width:44px;height:24px;border-radius:12px;background:var(--s2);border:1px solid var(--b);position:relative}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--m);transition:transform var(--d)}
+.tog[aria-checked=true]{background:var(--a)}.tog[aria-checked=true]::after{transform:translateX(20px);background:var(--ai)}
+.opt[aria-pressed=true]{outline:2px solid var(--a)}
+.swatch{width:100%;height:56px;border-radius:10px;border:1px solid var(--b)}
+textarea.notes{width:100%;height:100%;border:0;border-radius:0;resize:none;padding:14px;background:var(--s);font-size:15px}
+.chat{display:flex;flex-direction:column;height:100%}
+.msgs{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:85%;padding:8px 12px;border-radius:14px;white-space:pre-wrap;background:var(--s2);align-self:flex-start}
+.msg.u{background:var(--a);color:var(--ai);align-self:flex-end}
+.cin{display:flex;gap:8px;padding:10px;border-top:1px solid var(--b)}.cin input{flex:1}
+.gcard{position:relative}
+.gart{height:90px;border-radius:12px;display:grid;place-items:center;font:700 40px Georgia,serif;color:#fff;background:linear-gradient(135deg,hsl(var(--h) 60% 45%),hsl(var(--h) 50% 20%))}
+.fav{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:#000a;color:#fff}
+.fav[aria-pressed=true]{background:var(--a);color:var(--ai)}
+.beacon{position:absolute;width:52px;height:52px;border-radius:50%;background:var(--a);box-shadow:0 0 0 8px #fff2;transition:left var(--d),top var(--d)}
+.field{position:relative;height:100%;background:radial-gradient(hsl(var(--h) 60% 30%),var(--s))}
+
+@media(max-width:720px){.win{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0}.rs{display:none}#clk small{display:none}}
+@media(prefers-reduced-motion:reduce){:root{--d:0s}}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
-<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></symbol>
-<symbol id="i-arcade" viewBox="0 0 24 24"><path d="M7 8h10a4 4 0 0 1 4 4v1a3 3 0 0 1-5 2l-1-1H9l-1 1a3 3 0 0 1-5-2v-1a4 4 0 0 1 4-4zM8 10v3M6.5 11.5h3M16 11h.01M18 13h.01"/></symbol>
-<symbol id="i-ai" viewBox="0 0 24 24"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2zM19 16l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></symbol>
-<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></symbol>
-<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" stroke-dasharray="3 2.2"/></symbol>
-<symbol id="i-apps" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></symbol>
-<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/></symbol>
-<symbol id="i-search" viewBox="0 0 24 24"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4"/></symbol>
-<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20S4 15 4 9a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 6-8 11-8 11z"/></symbol>
-<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
-<symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
-<symbol id="i-max" viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/></symbol>
-<symbol id="i-rest" viewBox="0 0 24 24"><path d="M8 8h11v11H8zM5 16V5h11"/></symbol>
-<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
-<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></symbol>
-<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4"/></symbol>
-<symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
-<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
-<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3zM12 10v4M12 17h.01"/></symbol>
-</defs></svg>
-
-<div id="os" data-mode="home" data-run="0">
 <div id="wall"></div>
-<header id="top">
- <div class="brand"><i class="mk"></i>MYTHOSOS</div>
- <nav class="nav" aria-label="Sections">
-  <button class="tab" data-tab="home" data-act="view:home">HOME</button>
-  <button class="tab" data-tab="arcade" data-act="app:arcade">ARCADE</button>
-  <button class="tab" data-tab="apps" data-act="view:apps">APPS</button>
-  <button class="tab" data-tab="files" data-act="app:files">FILES</button>
-  <button class="tab" data-tab="media" data-act="view:media">MEDIA</button>
-  <button class="tab" data-tab="ai" data-act="app:ai">AI</button>
-  <button class="tab" data-tab="settings" data-act="app:settings">SETTINGS</button>
- </nav>
- <span class="sp"></span>
- <div id="tray">
-  <button class="tb" data-act="ov:lau" aria-label="Search and launcher"><svg class="i"><use href="#i-search"/></svg></button>
-  <button class="tb" data-act="ov:nc" aria-label="Notifications"><svg class="i"><use href="#i-bell"/></svg><b class="bdg" id="bdg" hidden>0</b></button>
-  <button class="tb" data-act="ov:cc" aria-label="Control Center"><svg class="i"><use href="#i-sliders"/></svg></button>
-  <time id="clk"><b></b><small></small></time>
-  <button class="tb" data-act="ov:pm" aria-label="Profile menu"><span class="av" id="av"></span></button>
- </div>
-</header>
-<main id="home" aria-label="Mythos Home"></main>
-<div id="desk" aria-label="Desktop"></div>
+<main id="icons" aria-label="Desktop"></main>
 <div id="wins"></div>
-<nav id="dock" aria-label="Taskbar"><button class="dk" data-act="ov:lau" aria-label="Open launcher"><i class="mk"></i></button><div id="dapps"></div></nav>
-<div class="ov" id="lau" inert role="dialog" aria-modal="true" aria-label="Launcher"><div class="pn"><div class="qb"><svg class="i"><use href="#i-search"/></svg><input id="lq" placeholder="Search apps, games, settings, files, commands" aria-label="Search MythosOS" autocomplete="off"></div><div id="lr"></div></div></div>
-<div class="ov" id="pal" inert role="dialog" aria-modal="true" aria-label="Command palette"><div class="pn"><div class="qb"><svg class="i"><use href="#i-sliders"/></svg><input id="pq" placeholder="Type a command" aria-label="Command" autocomplete="off"></div><div id="pr"></div></div></div>
-<div class="ov pp" id="cc" inert role="dialog" aria-label="Control Center"><div class="pn"></div></div>
-<div class="ov pp" id="nc" inert role="dialog" aria-label="Notifications"><div class="pn"></div></div>
-<div class="ov pp" id="pm" inert role="dialog" aria-label="Profile menu"><div class="pn"></div></div>
-<div class="ov" id="swt" inert role="dialog" aria-label="Window switcher"><div class="sws"></div></div>
-</div>
-<div id="boot"><i class="mk"></i><h1>MYTHOSOS</h1><p class="nt2">Your world. Your system.</p></div>
-<dialog id="dlg"></dialog>
-<div id="cm" role="menu"></div>
+
+<nav id="bar" aria-label="Taskbar">
+  <button id="start" aria-label="Open launcher" title="Launcher (Ctrl+Space)">M</button>
+  <div id="tasks"></div>
+  <time id="clk"><b></b><span></span></time>
+</nav>
+
 <div id="toasts" aria-live="polite"></div>
+<div id="ctx" role="menu" hidden></div>
+
+<div class="ov" id="lau" hidden role="dialog" aria-modal="true" aria-label="Launcher">
+  <div class="pn"><input class="qb" id="lq" placeholder="Search apps, games, commands" aria-label="Search" autocomplete="off"><div id="lr"></div></div>
+</div>
 
 <script>
 'use strict';
-/* ===== Core helpers ===== */
-const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+/* ---------- Helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
-const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
 const ago=t=>{const s=(Date.now()-t)/1e3;return s<60?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':new Date(t).toLocaleDateString()};
-const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const BAD=['__proto__','constructor','prototype'];
+const cleanName=s=>String(s).replace(/[\/\\]/g,'-').trim().slice(0,60);
 
-/* ===== Data ===== */
+/* ---------- Data ---------- */
 const THEMES={dark:'Mythos Dark',light:'Mythos Light',midnight:'Midnight',aurora:'Aurora',graphite:'Graphite',nebula:'Nebula'};
-const THC={dark:['#0a1316','#e8a45a'],light:['#eef1ec','#a85512'],midnight:['#0b0e24','#8aa2ff'],aurora:['#06141a','#5be3b0'],graphite:['#161616','#cfd4dc'],nebula:['#150b26','#d58bff']};
-const WALLS={obsidian:['Obsidian','radial-gradient(90% 80% at 85% 0%,#1f5560aa,transparent 60%),radial-gradient(70% 60% at 0% 100%,#4a3216aa,transparent 60%),#0a1316'],
-midnight:['Midnight','linear-gradient(160deg,#0b1030,#1c2760 55%,#0b1030)'],
-nebula:['Nebula','radial-gradient(60% 50% at 72% 28%,#8a35c8bb,transparent),radial-gradient(55% 55% at 18% 82%,#1f6fb8aa,transparent),#0e0820'],
-aurora:['Aurora','radial-gradient(80% 50% at 30% 90%,#1f9a7baa,transparent),linear-gradient(120deg,#031a1f,#0b4a45 45%,#0a2f3b)'],
-abstract:['Abstract','conic-gradient(from 210deg at 70% 40%,#e8a45a66,#1d4a52,#2a1a3a,#e8a45a66),#0a1316'],
-minimal:['Minimal','linear-gradient(#2a3036,#14181b)'],
-grid:['Mythos Grid','linear-gradient(#ffffff10 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,#ffffff10 1px,transparent 1px) 0 0/48px 48px,radial-gradient(80% 60% at 50% 0,#1d4a52,#0a1316)']};
-const ACC=['#e8a45a','#8aa2ff','#5be3b0','#ff7a90','#d58bff','#f2d65c'];
-const CATS=['Arcade','Racing','Puzzle','Strategy','Sports','Platformer','Retro','Simulation','Sandbox','Casual','Multiplayer','Mythos Originals'];
-/* Games: add a `src` (path to a game's index.html) to any entry to embed a real game in its window. */
-const G=[
-['runner','Mythos Runner',['Platformer','Mythos Originals'],28,4.7,'Sprint through shifting ruins in a one-button endless run.','Space or tap: jump. Down: slide.'],
-['kart','Mythos Kart',['Racing','Mythos Originals','Multiplayer'],200,4.5,'Drift, boost and outpace friends on floating tracks.','Arrows: steer. Space: drift.'],
-['drive','Mythos Drive',['Racing','Mythos Originals','Simulation'],160,4.3,'A calm night drive across an endless coastline.','W and S: throttle. A and D: steer.'],
-['defense','Mythos Defense',['Strategy','Mythos Originals'],350,4.6,'Hold the relay line with towers, traps and timing.','Mouse: place towers. Space: start wave.'],
-['golf','Mythos Golf',['Sports','Mythos Originals','Casual'],120,4.4,'Nine strange holes. Aim, pull back, release.','Drag to aim. Release to swing.'],
-['labs','Mythos Labs',['Sandbox','Mythos Originals','Puzzle'],290,4.2,'Combine elements and discover what the lab can build.','Drag to combine. Right-click to inspect.'],
-['arena','Mythos Arena',['Multiplayer','Mythos Originals','Arcade'],10,4.5,'Fast duels in a shrinking arena. First to five wins.','WASD: move. Mouse: aim.'],
-['blocks','Mythos Blocks',['Puzzle','Mythos Originals','Casual'],55,4.8,'Fit shifting shapes into a growing tower.','Arrows: move. Up: rotate.'],
-['orbit','Orbit Dash',['Arcade'],240,4.1,'Slingshot between planets and chase the high score.','Click to launch.'],
-['tycoon','Tiny Tycoon',['Simulation','Casual'],90,4.0,'Grow a pocket-sized town into a thriving city.','Mouse only.'],
-['echo','Cave Echo',['Retro','Platformer'],320,4.2,'A pixel-era descent guided by sound.','Arrows: move. Z: ping.'],
-['kick','Pitch Perfect',['Sports','Multiplayer'],140,3.9,'Quick five-a-side matches with friends.','Arrows: move. X: pass.']
-].map(([id,t,c,h,r,d,k])=>({id,t,c,h,r,d,k}));
+const WALLS={obsidian:['Obsidian','radial-gradient(90% 80% at 85% 0%,#1f5560aa,transparent 60%),#0a1316'],
+ midnight:['Midnight','linear-gradient(160deg,#0b1030,#1c2760 55%,#0b1030)'],
+ nebula:['Nebula','radial-gradient(60% 50% at 72% 28%,#8a35c8bb,transparent),radial-gradient(55% 55% at 18% 82%,#1f6fb8aa,transparent),#0e0820'],
+ aurora:['Aurora','linear-gradient(120deg,#031a1f,#0b4a45 45%,#0a2f3b)'],
+ abstract:['Abstract','conic-gradient(from 210deg at 70% 40%,#e8a45a66,#1d4a52,#2a1a3a,#e8a45a66),#0a1316'],
+ minimal:['Minimal','linear-gradient(#2a3036,#14181b)'],
+ grid:['Mythos Grid','linear-gradient(#ffffff10 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,#ffffff10 1px,transparent 1px) 0 0/48px 48px,radial-gradient(80% 60% at 50% 0,#1d4a52,#0a1316)']};
+const ACCENTS=['#e8a45a','#8aa2ff','#5be3b0','#ff7a90','#d58bff','#f2d65c'];
+/* Add `src` to any game to embed a real game in its window. */
+const GAMES=[
+ {id:'runner',t:'Mythos Runner',c:'Platformer',h:28,r:4.7,d:'Sprint through shifting ruins in a one-button endless run.',k:'Space: jump. Down: slide.'},
+ {id:'blocks',t:'Mythos Blocks',c:'Puzzle',h:55,r:4.8,d:'Fit shifting shapes into a growing tower.',k:'Arrows: move. Up: rotate.'},
+ {id:'defense',t:'Mythos Defense',c:'Strategy',h:350,r:4.6,d:'Hold the relay line with towers, traps and timing.',k:'Mouse: place towers. Space: start wave.'},
+ {id:'kart',t:'Mythos Kart',c:'Racing',h:200,r:4.5,d:'Drift, boost and outpace friends on floating tracks.',k:'Arrows: steer. Space: drift.'},
+ {id:'golf',t:'Mythos Golf',c:'Sports',h:120,r:4.4,d:'Eighteen holes of sand, water and wind. Aim, charge, release.',k:'Space or mouse: charge and swing. Up/Down: angle. 1/2/3: club. R: restart.',src:'golf/index.html'},
+ {id:'orbit',t:'Orbit Dash',c:'Arcade',h:240,r:4.1,d:'Slingshot between planets and chase the high score.',k:'Click to launch.'}
+];
 const APPS={
-arcade:{n:'Mythos Arcade',i:'arcade',h:28,w:[940,620],d:'Your game library'},
-files:{n:'Mythos Files',i:'folder',h:190,w:[780,520],d:'Browse the virtual file system'},
-ai:{n:'Mythos AI',i:'ai',h:265,w:[460,640],d:'Local assistant for MythosOS'},
-sentinel:{n:'Sentinel',i:'shield',h:150,w:[540,580],d:'System status and privacy'},
-settings:{n:'Settings',i:'gear',h:215,w:[860,580],d:'Personalize and configure'}};
-const CMDS=[['Open Files','app:files','folder'],['Open Arcade','app:arcade','arcade'],['Open Settings','app:settings','gear'],['Open AI','app:ai','ai'],['Open Sentinel','app:sentinel','shield'],['Toggle Dark Mode','theme','sun'],['Change Wallpaper','wall:next','apps'],['Open Notifications','ov:nc','bell'],['Switch Home Mode','mode:home','apps'],['Switch Desktop Mode','mode:desktop','apps'],['Open Control Center','ov:cc','sliders'],['Toggle Fullscreen','fs','max'],['Switch Windows','swstart','apps']];
-const SETS=[['Theme','Personalization'],['Wallpaper','Personalization'],['Accent color','Personalization'],['Animation intensity','Personalization'],['Interface mode','Personalization'],['Profile name','Personalization'],['Version','System'],['Storage used','System'],['Pinned apps','Applications'],['Favorites','Gaming'],['Do Not Disturb','Notifications'],['Privacy','Privacy'],['Reduce motion','Accessibility'],['Lite mode','Accessibility'],['Keyboard shortcuts','Keyboard'],['About MythosOS','About']];
-const SCATS=['System','Personalization','Applications','Gaming','Notifications','Privacy','Accessibility','Keyboard','About'];
+ notes:{n:'Notes',ic:'📝',c:'#b8860b',w:[520,420]},
+ files:{n:'Files',ic:'📁',c:'#2b6cb0',w:[700,480]},
+ arcade:{n:'Arcade',ic:'🎮',c:'#7b3fbf',w:[760,540]},
+ ai:{n:'Mythos AI',ic:'✨',c:'#0f766e',w:[440,560]},
+ sentinel:{n:'Sentinel',ic:'🛡️',c:'#2f855a',w:[480,460]},
+ settings:{n:'Settings',ic:'⚙️',c:'#4a5568',w:[700,500]}
+};
+const COMMANDS=[
+ ['Next wallpaper','cmd:wall'],['Toggle light/dark theme','cmd:theme'],['Toggle reduced motion','cmd:motion'],
+ ['Show desktop','cmd:min'],['New folder on Desktop','cmd:newdir']
+];
 
-/* ===== Persistence with recovery ===== */
-const KEY='mythos.v1',T0=Date.now();
-const D={theme:'dark',wall:'obsidian',accent:'',anim:2,mode:'home',dnd:false,perf:false,name:'Projecttt',pins:['arcade','files','ai','sentinel','settings'],fav:[],rec:[],played:{},geo:{},chat:[]};
-/* Directories are null-prototype objects so user-chosen names like "__proto__" are harmless. */
-const norm=(o,d=0)=>{if(typeof o==='string')return o.slice(0,6000);if(o&&typeof o==='object'&&!Array.isArray(o)&&d<8){const r=Object.create(null);for(const k of Object.keys(o))r[k]=norm(o[k],d+1);return r}throw 0};
-let S={...D},FS,bad=false;
-try{const r=ls.get(KEY);if(r){const o=JSON.parse(r);S={...D,...o.s};FS=norm(o.fs)}}catch(e){bad=true;S={...D};FS=null}
-if(!THEMES[S.theme])S.theme=D.theme;if(!WALLS[S.wall])S.wall=D.wall;if(!/^#[0-9a-f]{6}$/i.test(S.accent))S.accent='';
-S.mode=S.mode==='desktop'?'desktop':'home';if(![0,1,2].includes(S.anim))S.anim=2;S.name=String(S.name||D.name).slice(0,24)||D.name;S.dnd=!!S.dnd;S.perf=!!S.perf;
-for(const k of['pins','fav','rec','chat'])if(!Array.isArray(S[k]))S[k]=[];
-for(const k of['played','geo'])if(!S[k]||typeof S[k]!=='object'||Array.isArray(S[k]))S[k]={};
-S.pins=S.pins.filter(k=>APPS[k]);S.fav=S.fav.filter(k=>G.some(g=>g.id===k));
-S.rec=S.rec.filter(r=>r&&(r.k==='a'?APPS[r.id]:r.k==='g'&&G.some(g=>g.id===r.id)));
-S.chat=S.chat.filter(m=>m&&typeof m.t==='string').slice(-40).map(m=>({r:m.r==='u'?'u':'a',t:m.t,a:Array.isArray(m.a)?m.a.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&typeof p[1]==='string'):undefined}));
-if(!FS)FS=norm({Desktop:{'Welcome.txt':'Welcome to MythosOS.\nThis desktop is a simulated file system stored in your browser.'},Documents:{'Notes.txt':'Ideas for Mythos:\n- add real games\n- connect an AI backend',Plans:{}},Downloads:{},Pictures:{'Aurora.png':'(image placeholder)'},Music:{'Theme.mp3':'(audio placeholder)'},Videos:{'Trailer.mp4':'(video placeholder)'},Games:{Saves:{}},Projects:{MythosOS:{'roadmap.md':'# Roadmap\n1. Real games\n2. Cloud AI\n3. Accounts'}},Mythos:{'about.txt':'MythosOS prototype 0.1. Your world. Your system.'}});
-const save=()=>ls.set(KEY,JSON.stringify({s:S,fs:FS}));
+/* ---------- State with safe persistence ---------- */
+const KEY='mythos.v2';
+const DEF={theme:'dark',wall:'obsidian',accent:'#e8a45a',motion:true,pins:['notes','files','arcade','ai','settings'],fav:[],notes:'',
+ fs:{Desktop:{'Welcome.txt':'Welcome to MythosOS 0.2.\nOpen the launcher with Ctrl+Space.'},Documents:{'Ideas.txt':'- real games\n- AI backend'},Games:{}}};
+function load(){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(!o||typeof o!=='object')return structuredClone(DEF);
+ const s={...structuredClone(DEF),...o};
+ if(!THEMES[s.theme])s.theme=DEF.theme;if(!WALLS[s.wall])s.wall=DEF.wall;if(!/^#[0-9a-f]{6}$/i.test(s.accent))s.accent=DEF.accent;
+ s.motion=!!s.motion;s.pins=(Array.isArray(s.pins)?s.pins:[]).filter(k=>APPS[k]);s.fav=(Array.isArray(s.fav)?s.fav:[]).filter(id=>GAMES.some(g=>g.id===id));
+ s.notes=String(s.notes||'').slice(0,100000);if(!s.fs||typeof s.fs!=='object'||Array.isArray(s.fs))s.fs=structuredClone(DEF.fs);
+ return s}catch(e){return structuredClone(DEF)}}
+let S=load(),saveT=0,saveFailed=false;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));saveFailed=false}catch(e){if(!saveFailed)toast('Storage','Changes cannot be saved in this browser.','⚠️');saveFailed=true}},200)}
 
-/* ===== Virtual file system ===== */
-const isDir=n=>typeof n==='object',split=s=>s?s.split('/'):[];
-const at=p=>{let n=FS;for(const k of p){if(!isDir(n)||!(k in n))return null;n=n[k]}return n};
-const walk=(n,p,f)=>{for(const k in n){const q=[...p,k];f(k,q,n[k]);if(isDir(n[k]))walk(n[k],q,f)}};
-const cleanName=s=>s.replace(/[\/\\]/g,'-').trim().slice(0,60);
-const size=n=>isDir(n)?Object.keys(n).length+' items':new Blob([n]).size+' B';
-const sz=n=>isDir(n)?Object.keys(n).length:n.length,ext=n=>n.includes('.')?n.split('.').pop().toLowerCase():'';
-const uniq=(d,b)=>{let n=b,i=2;while(n in d)n=b+' '+i++;return n};
+/* ---------- Virtual file system ---------- */
+const fsAt=p=>{let n=S.fs;for(const k of p){if(!n||typeof n!=='object'||!Object.prototype.hasOwnProperty.call(n,k))return null;n=n[k]}return n};
+const isDir=n=>n!==null&&typeof n==='object';
+const fsWalk=(d,p,f)=>{for(const k of Object.keys(d)){const q=[...p,k];f(k,q,d[k]);if(isDir(d[k]))fsWalk(d[k],q,f)}};
+const fsAddName=(dir,name)=>{let n=name,i=2;while(Object.prototype.hasOwnProperty.call(dir,n))n=name.replace(/(\.\w+)?$/,' '+i++ +'$1');return n};
 
-/* ===== State ===== */
-const os=$('#os'),wins=$('#wins'),W={},N=[];
-let order=[],Z=10,view='home',feat=0,OV=null,LF=null,sw=null,nid=0,dr=null;
-const coarse=matchMedia('(pointer:coarse)').matches,ST={cat:'Personalization'},arc={cat:'All',q:'',g:null},F={p:[],v:'grid',s:'name',q:''};
+/* ---------- Toasts & menus ---------- */
+function toast(title,msg,ic='🔔'){const e=document.createElement('div');e.className='toast';e.innerHTML=`<span class="ico" style="--c:#2d3748">${ic}</span><div><b>${esc(title)}</b><div class="m sm">${esc(msg)}</div></div>`;
+ $('#toasts').append(e);setTimeout(()=>e.remove(),4000)}
+function ctxMenu(x,y,items){const c=$('#ctx');c.innerHTML=items.map(([l,f])=>`<button role="menuitem">${esc(l)}</button>`).join('');
+ c.hidden=false;c.style.left=clamp(x,4,innerWidth-220)+'px';c.style.top=clamp(y,4,innerHeight-c.offsetHeight-60)+'px';
+ [...c.children].forEach((b,i)=>b.onclick=()=>{hideCtx();items[i][1]()});c.firstChild.focus()}
+const hideCtx=()=>{$('#ctx').hidden=true};
 
-/* ===== Theme ===== */
-const lum=h=>{const[r,g,b]=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);return .2126*r+.7152*g+.0722*b};
-function apply(){const r=document.documentElement,c=S.accent;r.dataset.theme=S.theme;r.dataset.anim=S.anim;r.toggleAttribute('data-perf',S.perf);r.style.setProperty('--wall',WALLS[S.wall][1]);
- if(c){r.style.setProperty('--a',c);r.style.setProperty('--ai',lum(c)>.45?'#10140f':'#fff')}else{r.style.removeProperty('--a');r.style.removeProperty('--ai')}}
-function keepFocus(fn){const e=document.activeElement,a=e&&e.dataset&&e.dataset.act,c=e&&e.closest&&e.closest('.win,#home,.ov');fn();
- if(a&&c&&c.isConnected){const n=c.querySelector(`[data-act="${CSS.escape(a)}"]`);if(n&&n!==e)n.focus()}}
-const R=(i,t,s,a,h=215,x='')=>`<button class="res" data-act="${esc(a)}"><span class="ap" style="--h:${h}">${ic(i)}</span><span><b>${esc(t)}</b>${s?`<small>${esc(s)}</small>`:''}</span>${x}</button>`;
-const ask=(t,o={})=>new Promise(res=>{const d=$('#dlg');
- d.innerHTML=`<form method="dialog"><h3 style="margin-top:0">${esc(t)}</h3>${o.m?`<p>${esc(o.m)}</p>`:''}${o.v!=null?`<input name="v" value="${esc(o.v)}" maxlength="60" aria-label="${esc(t)}" autocomplete="off">`:''}<div class="hb" style="justify-content:flex-end"><button type="button" class="sb" onclick="this.closest('dialog').close('x')">Cancel</button><button value="ok" class="pb">${o.ok||'OK'}</button></div></form>`;
- d.returnValue='';d.onclose=()=>res(d.returnValue==='ok'?(o.v!=null?$('input',d).value:true):null);d.showModal();const i=$('input',d);if(i){i.focus();i.select()}});
+/* ---------- Window manager ---------- */
+const wins=new Map();let zTop=10,seq=0;
+function openApp(id,o={}){const a=APPS[id]||{n:o.title||'App',ic:'🗂️',c:'#444',w:[480,360]};const key=o.key||id;
+ if(wins.has(key)){const r=wins.get(key);r.el.hidden=false;focusWin(key);return r}
+ const el=document.createElement('section');el.className='win';el.setAttribute('role','dialog');el.setAttribute('aria-label',o.title||a.n);
+ el.innerHTML=`<header class="wt"><span class="ico" style="--c:${a.c}">${a.ic}</span><b>${esc(o.title||a.n)}</b><span class="sp"></span><button data-w="min" aria-label="Minimize">–</button><button data-w="max" aria-label="Maximize">□</button><button data-w="x" aria-label="Close">×</button></header><div class="wb"></div><i class="rs"></i>`;
+ const [w,h]=o.size||a.w,n=wins.size*28%180;
+ Object.assign(el.style,{width:w+'px',height:h+'px',left:(90+n)+'px',top:(30+n)+'px'});
+ $('#wins').append(el);const rec={el,key,id,title:o.title||a.n,saved:null};wins.set(key,rec);
+ const body=$('.wb',el);(o.render||RENDER[id]||(()=>{body.innerHTML='<p class="pad m">This app is not available.</p>'}))(body,rec,o);
+ focusWin(key);updateTasks();return rec}
+function focusWin(key){const r=wins.get(key);if(!r)return;document.querySelectorAll('.win.on').forEach(x=>x.classList.remove('on'));
+ r.el.classList.add('on');r.el.style.zIndex=++zTop;r.el.hidden=false;updateTasks()}
+function closeWin(key){const r=wins.get(key);if(!r)return;wins.delete(key);r.el.remove();
+ const top=[...wins.values()].filter(x=>!x.el.hidden).sort((a,b)=>b.el.style.zIndex-a.el.style.zIndex)[0];if(top)focusWin(top.key);else updateTasks()}
+function minWin(key){const r=wins.get(key);if(!r)return;r.el.hidden=true;r.el.classList.remove('on');updateTasks()}
+function setSnap(r,m){const s=r.el.style,H=innerHeight-52;if(!r.saved)r.saved={l:r.el.style.left,t:r.el.style.top,w:r.el.style.width,h:r.el.style.height};
+ r.el.dataset.snap=m;if(m==='max'){Object.assign(s,{left:'0px',top:'0px',width:'100%',height:H+'px'})}
+ else{Object.assign(s,{top:'0px',height:H+'px',width:innerWidth/2+'px',left:m==='L'?'0px':innerWidth/2+'px'})}}
+function unsnap(r){if(!r.el.dataset.snap)return;delete r.el.dataset.snap;if(r.saved){Object.assign(r.el.style,{left:r.saved.l,top:r.saved.t,width:r.saved.w,height:r.saved.h});r.saved=null}}
 
-/* ===== Notifications ===== */
-function badge(){const n=N.filter(x=>!x.read).length,b=$('#bdg');b.textContent=n;b.hidden=!n;const e=$('#st-un');if(e)e.textContent=n+' unread'}
-function toast(a,m,i){const e=document.createElement('div');e.className='toast';e.innerHTML=`<span class="ap" style="--h:28">${ic(i)}</span><div><b>${esc(a)}</b><small>${esc(m)}</small></div>`;$('#toasts').append(e);setTimeout(()=>e.remove(),4800)}
-function notify(a,m,i='bell',quiet,t=Date.now()){N.unshift({id:++nid,app:a,msg:m,icon:i,t,read:false});badge();if(!quiet&&!S.dnd)toast(a,m,i);if(OV==='nc')ncFill()}
-function ncFill(){$('#nc .pn').innerHTML=`<div class="rw" style="padding-top:0"><h3 style="margin:0">Notifications</h3><button class="sb" data-act="nclr">Clear all</button></div>${S.dnd?'<p class="nt2" style="margin-top:8px">Do Not Disturb is on. Pop-ups are muted.</p>':''}${N.length?N.map(n=>`<div class="nt${n.read?'':' un'}"><span class="ap" style="--h:28">${ic(n.icon)}</span><div><b>${esc(n.app)}</b>${esc(n.msg)}<small>${ago(n.t)}</small></div><button class="x" data-act="ndel:${n.id}" aria-label="Dismiss notification from ${esc(n.app)}">${ic('x')}</button></div>`).join(''):'<p class="emp">You are all caught up.</p>'}`}
+let drag=null;
+$('#wins').addEventListener('pointerdown',e=>{const el=e.target.closest('.win');if(!el)return;const r=[...wins.values()].find(x=>x.el===el);if(!r)return;
+ focusWin(r.key);if(e.target.closest('button'))return;const isRs=e.target.classList.contains('rs');if(!isRs&&!e.target.closest('.wt'))return;
+ if(!isRs&&r.el.dataset.snap){const prevW=r.saved?parseFloat(r.saved.w):500;unsnap(r);r.el.style.width=prevW+'px';r.el.style.left=(e.clientX-prevW/2)+'px'}
+ drag={r,isRs,x:e.clientX,y:e.clientY,l:r.el.offsetLeft,t:r.el.offsetTop,w:r.el.offsetWidth,h:r.el.offsetHeight};
+ try{el.setPointerCapture(e.pointerId)}catch(_){}});
+addEventListener('pointermove',e=>{if(!drag)return;const{r,isRs}=drag,dx=e.clientX-drag.x,dy=e.clientY-drag.y,s=r.el.style;
+ if(isRs){s.width=Math.max(300,drag.w+dx)+'px';s.height=Math.max(200,drag.h+dy)+'px'}
+ else{s.left=clamp(drag.l+dx,-drag.w+120,innerWidth-120)+'px';s.top=clamp(drag.t+dy,0,innerHeight-60)+'px'}});
+addEventListener('pointerup',e=>{if(!drag)return;const{r,isRs}=drag;drag=null;if(isRs)return;
+ if(e.clientY<6)setSnap(r,'max');else if(e.clientX<6)setSnap(r,'L');else if(e.clientX>innerWidth-6)setSnap(r,'R')});
+$('#wins').addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(!b)return;const key=[...wins.values()].find(x=>x.el.contains(b)).key,r=wins.get(key);
+ const a=b.dataset.w;if(a==='x')closeWin(key);else if(a==='min')minWin(key);else{if(r.el.dataset.snap){unsnap(r)}else setSnap(r,'max')}});
+$('#wins').addEventListener('dblclick',e=>{const t=e.target.closest('.wt');if(!t||e.target.closest('button'))return;const r=[...wins.values()].find(x=>x.el.contains(t));
+ if(r.el.dataset.snap)unsnap(r);else setSnap(r,'max')});
 
-/* ===== Overlays ===== */
-const OVR={lau:()=>{$('#lq').value='';lauList('')},pal:()=>{$('#pq').value='';palList('')},cc:ccFill,nc:ncFill,pm:pmFill};
-function ovOpen(id){if(OV===id){ovClose();return}const p=OV&&$('#'+OV);if(p){p.classList.remove('show');p.inert=true}else LF=document.activeElement;
- OV=id;const el=$('#'+id);OVR[id]();el.inert=false;el.classList.add('show');const f=$('input',el)||$('button',el);if(f)f.focus({preventScroll:true})}
-function ovClose(){if(!OV)return;const el=$('#'+OV);if(OV==='nc'){N.forEach(n=>n.read=true);badge()}el.classList.remove('show');el.inert=true;OV=null;if(LF&&LF.isConnected)LF.focus({preventScroll:true});LF=null}
-function selMove(d){const r=$$('#'+OV+' .res');if(!r.length)return;let i=r.findIndex(x=>x.classList.contains('sel'));if(r[i])r[i].classList.remove('sel');i=(i+d+r.length)%r.length;r[i].classList.add('sel');r[i].scrollIntoView({block:'nearest'})}
-function fileHits(q){const o=[];walk(FS,[],(k,p,n)=>{if(k.toLowerCase().includes(q))o.push(R(isDir(n)?'folder':'file',k,'/'+p.join('/'),'fopen:'+p.join('/'),190))});return o}
-function lauList(q){q=q.trim().toLowerCase();const A=([id,a])=>R(a.i,a.n,a.d,'app:'+id,a.h),Gm=g=>R('arcade',g.t,g.c[0],'gdet:'+g.id,g.h),Cm=c=>R(c[2],c[0],'',c[1]);
- const gr=(t,l,c='')=>l.length?`<div class="gt">${t}</div><div class="${c}">${l.join('')}</div>`:'',has=s=>s.toLowerCase().includes(q);let h;
- if(!q)h=gr('Applications',Object.entries(APPS).map(A),'ag')+gr('Recent',S.rec.map(r=>r.k==='a'?A([r.id,APPS[r.id]]):Gm(G.find(g=>g.id===r.id))).slice(0,6),'ag')+gr('Favorites',S.fav.map(id=>Gm(G.find(g=>g.id===id))),'ag')+gr('Suggested',CMDS.slice(0,4).map(Cm),'ag');
- else{h=gr('Applications',Object.entries(APPS).filter(([id,a])=>has(a.n+' '+id+' '+a.d)).map(A))+gr('Games',G.filter(g=>has(g.t+' '+g.c.join(' ')+' game '+g.d)).slice(0,5).map(Gm))+gr('Settings',SETS.filter(s=>has(s[0])).slice(0,5).map(s=>R('gear',s[0],'Settings › '+s[1],'sc:'+s[1])))+gr('Files',fileHits(q).slice(0,5))+gr('Commands',CMDS.filter(c=>has(c[0])).slice(0,5).map(Cm));
-  h=h||`<p class="emp">Nothing matches “${esc(q)}”.</p>`}
- $('#lr').innerHTML=h;const f=$('#lr .res');if(f)f.classList.add('sel')}
-function palList(q){const ws=q.trim().toLowerCase().split(/\s+/),l=CMDS.filter(c=>ws.every(w=>c[0].toLowerCase().includes(w)));
- $('#pr').innerHTML=l.length?l.map(c=>R(c[2],c[0],'',c[1],215,c[1]==='app:settings'?'<kbd>Ctrl+,</kbd>':'')).join(''):'<p class="emp">No matching commands.</p>';const f=$('#pr .res');if(f)f.classList.add('sel')}
-function ccFill(){const fs=!!document.fullscreenElement,T=(a,i,l,s,p)=>`<button class="tile" data-act="${a}"${p===undefined?'':` aria-pressed="${p}"`}>${ic(i)}<b>${l}</b><small>${s}</small></button>`;
- $('#cc .pn').innerHTML=`<h3 style="margin:0 0 12px">Control Center</h3><div class="tg2">${T('cc:theme','sun','Dark mode',S.theme==='light'?'Off':'On',S.theme!=='light')}${T('cc:dnd','bell','Do Not Disturb',S.dnd?'On':'Off',S.dnd)}${T('cc:fs','max','Fullscreen',fs?'On':'Off',fs)}${T('cc:perf','sliders','Lite mode',S.perf?'On':'Off',S.perf)}${T('cc:mode','apps','Interface',S.mode==='home'?'Home':'Desktop')}${T('cc:nc','bell','Notifications',N.filter(n=>!n.read).length+' new')}${T('cc:set','gear','Settings','Open')}</div><p class="nt2" style="margin-top:12px">These controls change MythosOS only, not your device.</p>`}
-function ccAct(v){if(v==='theme')S.theme=S.theme==='light'?'dark':'light';else if(v==='dnd')S.dnd=!S.dnd;else if(v==='perf')S.perf=!S.perf;else if(v==='mode')setMode(S.mode==='home'?'desktop':'home');else if(v==='fs')toggleFS();else if(v==='nc'){ovOpen('nc');return}else if(v==='set'){openApp('settings');return}apply();save();keepFocus(ccFill)}
-function pmFill(){$('#pm .pn').innerHTML=`<div class="rw" style="padding-top:0"><div style="display:flex;gap:12px;align-items:center"><span class="av">${esc(S.name[0].toUpperCase())}</span><div><b>${esc(S.name)}</b><small>Local profile, kept in this browser</small></div></div></div>`+[['Profile','sc:Personalization','apps'],['Favorites','acat:Favorites','heart'],['Recent Activity','acat:Recent','file'],['Settings','app:settings','gear'],['Sign Out','signout','shield']].map(([t,a,i])=>R(i,t,'',a)).join('')}
-function toggleFS(){const d=document;if(d.fullscreenElement)d.exitFullscreen().catch(()=>{});else if(d.documentElement.requestFullscreen)d.documentElement.requestFullscreen().catch(()=>notify('System','The browser blocked fullscreen. Try again from a click or key press.','max'));else notify('System','Fullscreen is not supported in this browser.','max')}
-document.addEventListener('fullscreenchange',()=>{if(OV==='cc')keepFocus(ccFill)});
-function lock(){const b=$('#boot');b.innerHTML=`<i class="mk"></i><h1>MYTHOSOS</h1><p class="nt2">Signed out of the local profile.</p><button class="pb" data-act="unlock">Sign in as ${esc(S.name)}</button>`;ovClose();os.inert=true;b.classList.remove('off');$('button',b).focus()}
+/* ---------- Taskbar & desktop ---------- */
+function updateTasks(){const keys=[...new Set([...S.pins,...wins.keys()])];
+ $('#tasks').innerHTML=keys.map(k=>{const r=wins.get(k),a=APPS[k]||{n:r?r.title:k,ic:'🗂️'},on=r&&!r.el.hidden&&r.el.classList.contains('on'),run=!!r;
+  return `<button class="tk${on?' on':''}${run?' run':''}" data-task="${esc(k)}" aria-label="${esc(a.n)}${run?(r.el.hidden?' (minimized)':' (open)'):''}"><span>${a.ic}</span><span class="sm">${esc(a.n)}</span></button>`}).join('')}
+$('#tasks').addEventListener('click',e=>{const b=e.target.closest('[data-task]');if(!b)return;const k=b.dataset.task,r=wins.get(k);
+ if(!r)openApp(k);else if(r.el.hidden||!r.el.classList.contains('on'))focusWin(k);else minWin(k)});
+function renderDesktop(){const d=fsAt(['Desktop'])||{};
+ $('#icons').innerHTML=Object.keys(APPS).map(id=>`<button class="di" data-app="${id}"><span class="ico" style="--c:${APPS[id].c}">${APPS[id].ic}</span>${APPS[id].n}</button>`).join('')+
+ Object.keys(d).map(k=>`<button class="di" data-file="${esc(k)}"><span class="ico" style="--c:#555">${isDir(d[k])?'📁':'📄'}</span>${esc(k)}</button>`).join('')}
+$('#icons').addEventListener('dblclick',e=>{const b=e.target.closest('[data-app]');if(b)openApp(b.dataset.app);const f=e.target.closest('[data-file]');if(f)openFile(['Desktop',f.dataset.file])});
+$('#icons').addEventListener('click',e=>{const b=e.target.closest('[data-app]');if(b&&matchMedia('(pointer:coarse)').matches)openApp(b.dataset.app);const f=e.target.closest('[data-file]');if(f&&matchMedia('(pointer:coarse)').matches)openFile(['Desktop',f.dataset.file])});
+addEventListener('contextmenu',e=>{if(e.target.closest('input,textarea,.win,#bar,#ctx'))return;e.preventDefault();
+ const f=e.target.closest('[data-file]');
+ if(f){const p=['Desktop',f.dataset.file];ctxMenu(e.clientX,e.clientY,[['Open',()=>openFile(p)],['Rename',()=>renameFile(p)],['Delete',()=>deleteFile(p)]]);return}
+ ctxMenu(e.clientX,e.clientY,[['New folder',()=>newItem(['Desktop'],'dir')],['Change wallpaper',()=>cmd('wall')],['Open launcher',()=>openLauncher()]])});
+addEventListener('click',e=>{if(!e.target.closest('#ctx'))hideCtx()});
 
-/* ===== Window manager ===== */
-const meta=k=>W[k]?W[k].m:APPS[k]?{t:APPS[k].n,i:APPS[k].i,h:APPS[k].h}:{t:k,i:'file',h:200};
-function openWin(k,o){if(W[k]){foc(k);return}
- const el=document.createElement('section'),home=os.dataset.mode==='home',vw=innerWidth,vh=innerHeight,ty=home?56:0,g=S.geo[k]||{},n=order.length;
- el.className='win';el.dataset.k=k;el.setAttribute('role','dialog');el.setAttribute('aria-label',o.t);el.tabIndex=-1;
- el.innerHTML=`<header class="wt"><span class="ap" style="--h:${o.h}">${ic(o.i)}</span><b>${esc(o.t)}</b><span class="sp"></span><button data-w="min" aria-label="Minimize">${ic('min')}</button><button data-w="max" aria-label="Maximize">${ic('max')}</button><button data-w="x" aria-label="Close">${ic('x')}</button></header><div class="wb"></div><i class="rs"></i>`;
- const w=Math.min(g.w||o.w[0],vw-16),h=Math.min(g.h||o.w[1],vh-ty-90);
- el.style.cssText=`width:${w}px;height:${h}px;left:${clamp(g.x??(vw-w)/2+n*26-40,0,Math.max(0,vw-w))}px;top:${clamp(g.y??ty+(vh-ty-90-h)/2+n*26,ty,Math.max(ty,vh-h-80))}px`;
- wins.append(el);W[k]={el,m:o};if(home)setMax(k,true);o.r($('.wb',el),k);foc(k);el.focus({preventScroll:true});const i=$('[data-af]',el);if(i&&!coarse)i.focus()}
-function setMax(k,on){const w=W[k];w.el.classList.toggle('max',on);const b=$('[data-w=max]',w.el);b.innerHTML=ic(on?'rest':'max');b.setAttribute('aria-label',on?'Restore':'Maximize')}
-function foc(k){const w=W[k];if(!w)return;$$('.win.on').forEach(x=>x.classList.remove('on'));w.el.classList.remove('min');w.el.classList.add('on');w.el.style.zIndex=++Z;order=[k,...order.filter(x=>x!==k)];sync()}
-function minimize(k){const w=W[k];w.el.classList.add('min');w.el.classList.remove('on');const n=order.find(x=>x!==k&&!W[x].el.classList.contains('min'));if(n)foc(n);else sync()}
-function closeWin(k){const w=W[k];if(!w)return;delete W[k];order=order.filter(x=>x!==k);w.el.classList.add('out');setTimeout(()=>w.el.remove(),160);const n=order.find(x=>!W[x].el.classList.contains('min'));if(n)foc(n);else sync()}
-function wact(k,a){const w=W[k];if(!w)return;if(a==='x')closeWin(k);else if(a==='min')minimize(k);else{setMax(k,!w.el.classList.contains('max'));foc(k)}}
-function sync(){os.dataset.run=order.length;dockFill();navFill()}
-function dockFill(){$('#dapps').innerHTML=[...new Set([...S.pins,...order])].map(k=>{const m=meta(k),w=W[k],mn=w&&w.el.classList.contains('min'),on=w&&w.el.classList.contains('on');
- return `<button class="dk${w?' run':''}${on?' on':''}${mn?' mn':''}" data-act="dock:${esc(k)}" aria-label="${esc(m.t)}${w?mn?' (minimized)':' (running)':''}" title="${esc(m.t)}"><span class="ap" style="--h:${m.h}">${ic(m.i)}</span></button>`}).join('')}
-function dockClick(k){const w=W[k];if(!w){openApp(k);return}const c=w.el.classList;if(c.contains('min'))foc(k);else if(c.contains('on'))minimize(k);else foc(k)}
-function navFill(){const t=order.find(k=>!W[k].el.classList.contains('min')),cur=S.mode==='home'&&t&&W[t].el.classList.contains('on')&&$(`.tab[data-tab="${t}"]`)?t:view;
- $$('.tab').forEach(b=>b.dataset.tab===cur?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'))}
-function openApp(id){const a=APPS[id];if(!a)return;ovClose();if(!W[id])touch('a',id);openWin(id,{t:a.n,i:a.i,h:a.h,w:a.w,r:RENDER[id]})}
-function touch(k,id){S.rec=[{k,id},...S.rec.filter(r=>!(r.k===k&&r.id===id))].slice(0,10);if(k==='g')S.played[id]=Date.now();save();renderHome()}
-wins.addEventListener('pointerdown',e=>{const el=e.target.closest('.win');if(!el||e.button)return;const k=el.dataset.k;if(!el.classList.contains('on'))foc(k);
- const rs=e.target.closest('.rs');if(!(rs||e.target.closest('.wt'))||e.target.closest('button')||el.classList.contains('max'))return;
- dr={el,k,rs:!!rs,x:e.clientX,y:e.clientY,l:el.offsetLeft,t:el.offsetTop,w:el.offsetWidth,h:el.offsetHeight};e.target.setPointerCapture(e.pointerId)});
-wins.addEventListener('pointermove',e=>{if(!dr)return;const dx=e.clientX-dr.x,dy=e.clientY-dr.y,s=dr.el.style;
- if(dr.rs){s.width=Math.max(320,dr.w+dx)+'px';s.height=Math.max(220,dr.h+dy)+'px'}else{s.left=clamp(dr.l+dx,80-dr.w,innerWidth-80)+'px';s.top=clamp(dr.t+dy,os.dataset.mode==='home'?56:0,innerHeight-48)+'px'}});
-const dend=()=>{if(!dr)return;const{el,k}=dr;dr=null;if(APPS[k]){S.geo[k]={x:el.offsetLeft,y:el.offsetTop,w:el.offsetWidth,h:el.offsetHeight};save()}};
-wins.addEventListener('pointerup',dend);wins.addEventListener('pointercancel',dend);
-addEventListener('resize',()=>$$('.win:not(.max)').forEach(el=>{el.style.left=clamp(el.offsetLeft,80-el.offsetWidth,innerWidth-80)+'px';el.style.top=clamp(el.offsetTop,0,innerHeight-48)+'px'}));
-/* Window switcher (Alt+Tab or Alt+` where the browser allows; also via the command palette) */
-function swStep(d){const l=order.filter(k=>W[k]);if(!l.length)return;if(sw)sw.i=(sw.i+d+sw.l.length)%sw.l.length;else sw={l,i:l.length>1?1:0};
- $('#swt .sws').innerHTML=sw.l.map((k,i)=>{const m=meta(k);return `<button class="swi" data-act="swp:${i}" aria-current="${i===sw.i}"><span class="ap" style="--h:${m.h}">${ic(m.i)}</span><b>${esc(APPS[k]?APPS[k].n:k[0]==='g'?'Mythos Arcade':'Text Viewer')}</b><small>${esc(m.t)}</small></button>`}).join('');
- const el=$('#swt');el.inert=false;el.classList.add('show')}
-function swEnd(go){if(!sw)return;const k=sw.l[sw.i];sw=null;const el=$('#swt');el.classList.remove('show');el.inert=true;if(go&&W[k])foc(k)}
+/* ---------- File helpers ---------- */
+function openFile(p){const name=p[p.length-1],txt=fsAt(p);if(typeof txt!=='string')return;
+ openApp('notes',{key:'f:'+p.join('/'),title:name,size:[520,420],render:(b,r)=>renderNoteFile(b,p)})}
+function renderNoteFile(b,p){b.innerHTML=`<div class="chat"><textarea class="notes" aria-label="Contents of ${esc(p[p.length-1])}" spellcheck="false"></textarea><div class="toolbar"><span class="m sm">/${esc(p.join('/'))}</span><span class="sp"></span><output class="m sm"></output><button class="pb" data-save>Save</button></div></div>`;
+ const ta=$('textarea',b);ta.value=fsAt(p)||'';
+ $('[data-save]',b).onclick=()=>{const parent=fsAt(p.slice(0,-1));if(parent&&isDir(parent)&&Object.prototype.hasOwnProperty.call(parent,p[p.length-1])){parent[p[p.length-1]]=ta.value;save();$('output',b).textContent='Saved'}}}
+async function newItem(p,kind){const dir=fsAt(p);if(!isDir(dir))return;const base=kind==='dir'?'New folder':'Untitled.txt';
+ const name=prompt(kind==='dir'?'Folder name':'File name',fsAddName(dir,base));if(name==null)return;const n=cleanName(name);
+ if(!n||BAD.includes(n))return toast('Files','That name is not allowed.','⚠️');
+ if(Object.prototype.hasOwnProperty.call(dir,n))return toast('Files','“'+n+'” already exists.','⚠️');
+ dir[n]=kind==='dir'?{}:'';save();refreshAll()}
+function renameFile(p){const dir=fsAt(p.slice(0,-1)),old=p[p.length-1];if(!isDir(dir))return;const nm=prompt('Rename',old);if(nm==null)return;const n=cleanName(nm);
+ if(!n||n===old||BAD.includes(n))return;if(Object.prototype.hasOwnProperty.call(dir,n))return toast('Files','“'+n+'” already exists.','⚠️');
+ dir[n]=dir[old];delete dir[old];closeWin('f:'+p.join('/'));save();refreshAll()}
+function deleteFile(p){const dir=fsAt(p.slice(0,-1)),n=p[p.length-1];if(!isDir(dir))return;if(!confirm('Delete “'+n+'”? This cannot be undone.'))return;
+ delete dir[n];closeWin('f:'+p.join('/'));save();refreshAll()}
+function refreshAll(){renderDesktop();if(wins.has('files'))RENDER.files($('.wb',wins.get('files').el),wins.get('files'))}
 
-/* ===== Home ===== */
-const FEAT=[
-{t:'Mythos Arcade',g:'Your games. One place.',d:'Originals, classics and community picks in a single library. Add real games whenever you are ready.',a:['Open Arcade','app:arcade'],b:['Explore Originals','acat:Mythos Originals'],h:28},
-{t:'Mythos Runner',g:'Mythos Original',d:'Sprint through shifting ruins in a one-button endless run, built for quick sessions and long streaks.',a:['Play','game:runner'],b:['Details','gdet:runner'],h:200},
-{t:'Mythos AI',g:'Ask. Open. Do.',d:'A local assistant that opens apps, changes themes and answers questions about MythosOS.',a:['Open Mythos AI','app:ai'],b:['Meet Sentinel','app:sentinel'],h:265}];
-const QA=[['Open Files','app:files','folder'],['Ask Mythos AI','app:ai','ai'],['Command palette','ov:pal','search'],['Control Center','ov:cc','sliders'],['Desktop mode','mode:desktop','apps']];
-const heroHTML=()=>{const f=FEAT[feat];return `<div class="hc"><p class="tg">${f.g}</p><h1>${f.t}</h1><p class="hd">${f.d}</p><div class="hb"><button class="pb" data-act="${f.a[1]}">${f.a[0]}</button><button class="sb" data-act="${f.b[1]}">${f.b[0]}</button></div></div><div class="fs" role="tablist" aria-label="Featured">${FEAT.map((x,i)=>`<button class="fc" role="tab" aria-selected="${i===feat}" data-act="feat:${i}"><b>${x.t}</b><br><small>${x.g}</small></button>`).join('')}</div>`};
-function heroFill(){const h=$('#hero');if(!h)return;h.style.setProperty('--h',FEAT[feat].h);h.innerHTML=heroHTML()}
-function gcard(g,lg){const f=S.fav.includes(g.id);return `<article class="card${lg?' lg':''}" data-g="${g.id}"><button class="cb" data-act="gdet:${g.id}" aria-label="${esc(g.t)}, ${g.c[0]}, rated ${g.r}"><div class="art" style="--h:${g.h}"><span>${g.t.split(' ').pop()[0]}</span></div><div class="ci"><b>${esc(g.t)}</b><small><span>${g.c[0]}</span><span>★ ${g.r}</span></small></div></button><button class="fv" data-act="fav:${g.id}" aria-pressed="${f}" aria-label="${f?'Remove':'Add'} ${esc(g.t)} ${f?'from':'to'} favorites">${ic('heart')}</button></article>`}
-const atile=id=>{const a=APPS[id];return `<button class="card app" data-act="app:${id}"><span class="ap" style="--h:${a.h}">${ic(a.i)}</span><b>${a.n}</b><small>${a.d}</small></button>`};
-function renderHome(){let o;
- if(view==='apps')o=`<h2>All applications</h2><div class="gr">${Object.keys(APPS).map(atile).join('')}</div>`;
- else if(view==='media')o=['Music','Videos','Pictures'].map(d=>{const dd=at([d]),fl=dd?Object.keys(dd).filter(k=>!isDir(dd[k])):[];return `<h2>${d}</h2>`+(fl.length?`<div class="row">${fl.map(k=>`<button class="card app" data-act="fopen:${esc(d+'/'+k)}"><span class="ap" style="--h:${d==='Music'?320:d==='Videos'?10:170}">${ic(d==='Pictures'?'file':'play')}</span><b>${esc(k)}</b><small>${d}</small></button>`).join('')}</div>`:`<p class="nt2">Nothing here yet. Add files in Mythos Files under ${d}.</p>`)}).join('');
- else{const rg=S.rec.filter(r=>r.k==='g').map(r=>G.find(g=>g.id===r.id)),ra=[...new Set([...S.rec.filter(r=>r.k==='a').map(r=>r.id),...Object.keys(APPS)])].slice(0,6),un=N.filter(n=>!n.read).length;
-  o=`<section id="hero" style="--h:${FEAT[feat].h}" aria-label="Featured">${heroHTML()}</section><div class="qa" aria-label="Quick actions">${QA.map(([l,a,i])=>`<button class="pill" data-act="${a}">${ic(i)}${l}</button>`).join('')}</div>
-<h2>${rg.length?'Continue':'Start playing'}</h2><div class="row">${(rg.length?rg:G.slice(8,12)).map(g=>gcard(g)).join('')}</div>
-<h2>Recent apps</h2><div class="row">${ra.map(atile).join('')}</div>
-<h2>Featured games</h2><div class="row">${['runner','kart','blocks','defense'].map(id=>gcard(G.find(g=>g.id===id),1)).join('')}</div>
-<h2>Mythos Originals</h2><div class="row">${G.filter(g=>g.c.includes('Mythos Originals')).map(g=>gcard(g)).join('')}</div>
-<h2>System</h2><div class="st"><button class="stt" data-act="ov:nc"><small>Notifications</small><b id="st-un">${un} unread</b></button><button class="stt" data-act="app:sentinel"><small>Sentinel</small><b>Operating normally</b></button><button class="stt" data-act="sc:System"><small>MythosOS storage</small><b>${kb()}</b></button><button class="stt" data-act="ov:cc"><small>Interface</small><b>${S.mode==='home'?'Home':'Desktop'} mode</b></button></div>`}
- $('#home').innerHTML=o}
-function hnav(e){const sel='.cb,.fc,.pill,.stt,.app,.pb,.sb',t=e.target.closest(sel);if(!t)return;const rows=$$('#home .hb,#home .fs,#home .qa,#home .row,#home .st,#home .gr'),r=rows.findIndex(x=>x.contains(t));if(r<0)return;
- const items=$$(sel,rows[r]),i=items.indexOf(t);let n;
- if(e.key==='ArrowRight')n=items[i+1];else if(e.key==='ArrowLeft')n=items[i-1];else{const rr=rows[r+(e.key==='ArrowDown'?1:-1)];if(rr){const it=$$(sel,rr);n=it[Math.min(i,it.length-1)]}}
- if(n){e.preventDefault();n.focus();n.scrollIntoView({block:'nearest',inline:'nearest'})}}
-function setMode(m){S.mode=m;os.dataset.mode=m;(m==='home'?$('#top'):$('#dock')).append($('#tray'));save();navFill();renderHome()}
-function deskFill(){const dd=at(['Desktop'])||{};$('#desk').innerHTML=Object.keys(APPS).map(id=>`<button class="di" data-dact="app:${id}"><span class="ap" style="--h:${APPS[id].h}">${ic(APPS[id].i)}</span>${APPS[id].n}</button>`).join('')+Object.keys(dd).map(k=>{const p=esc('Desktop/'+k);return `<button class="di" data-p="${p}" data-dact="fopen:${p}"><span class="ap" style="--h:190">${ic(isDir(dd[k])?'folder':'file')}</span>${esc(k)}</button>`}).join('')}
+/* ---------- Apps ---------- */
+const RENDER={};
+RENDER.notes=(b)=>{b.innerHTML=`<div class="chat"><textarea class="notes" aria-label="Notes" placeholder="Start typing…"></textarea><div class="toolbar"><span class="m sm">Saved automatically</span></div></div>`;
+ const ta=$('textarea',b);ta.value=S.notes;ta.oninput=()=>{S.notes=ta.value;save()}};
 
-/* ===== Arcade ===== */
-const inCat=g=>arc.cat==='All'||g.c.includes(arc.cat)||(arc.cat==='Favorites'&&S.fav.includes(g.id))||(arc.cat==='Recent'&&S.rec.some(r=>r.k==='g'&&r.id===g.id));
-function arcadeRender(b){const g=G.find(x=>x.id===arc.g);
- b.innerHTML=`<div class="ar"><nav class="side" aria-label="Game categories">${['All','Favorites','Recent',...CATS].map(c=>`<button class="si${c===arc.cat?' on':''}" data-act="acat:${c}"${c===arc.cat?' aria-current="true"':''}>${c}</button>`).join('')}</nav><div class="main">${g?detail(g):`<input id="asq" data-af type="search" placeholder="Search games" value="${esc(arc.q)}" aria-label="Search games" style="width:100%"><div class="gr" id="agr"></div>`}</div></div>`;if(!g)arcFill()}
-function arcFill(){const q=arc.q.toLowerCase(),l=G.filter(g=>inCat(g)&&(!q||(g.t+' '+g.c.join(' ')+' '+g.d).toLowerCase().includes(q)));
- $('#agr').innerHTML=l.length?l.map(g=>gcard(g)).join(''):`<p class="emp">${arc.cat==='Favorites'?'No favorites yet. Tap the heart on any game.':'No games found.'}</p>`}
-function detail(g){const f=S.fav.includes(g.id),p=S.played[g.id];return `<button class="sb" data-act="aback">${ic('back')} Back</button><div class="dt"><div class="art" style="--h:${g.h}"><span style="font-size:96px">${g.t.split(' ').pop()[0]}</span></div><div><h1 style="font-size:2em">${esc(g.t)}</h1><div class="tags">${g.c.map(c=>`<span>${c}</span>`).join('')}</div><p>${esc(g.d)}</p><p class="nt2" style="margin-top:14px">Controls</p><p>${esc(g.k)}</p><p class="nt2" style="margin-top:14px">Status</p><p>${p?'Last played '+ago(p):'Not played yet'}, rated ★ ${g.r}</p><div class="hb"><button class="pb" data-act="game:${g.id}">${ic('play')} PLAY</button><button class="sb" data-act="fav:${g.id}" aria-pressed="${f}">${ic('heart')} ${f?'REMOVE FROM FAVORITES':'ADD TO FAVORITES'}</button></div></div></div>`}
-const arcadeAll=()=>{const w=W.arcade;if(w)arcadeRender($('.wb',w.el))};
-function toggleFav(id){const i=S.fav.indexOf(id);if(i<0)S.fav.push(id);else S.fav.splice(i,1);save();renderHome();arcadeAll();if(i<0)toast('Favorites','Added '+G.find(g=>g.id===id).t,'heart')}
-function playGame(id){const g=G.find(x=>x.id===id);if(!g)return;ovClose();touch('g',id);
- openWin('g:'+id,{t:g.t,i:'arcade',h:g.h,w:[620,500],r:b=>{
-  /* Opaque-origin sandbox keeps embedded games isolated from MythosOS data. */
+RENDER.files=(b,r)=>{const path=r.path||(r.path=['Desktop']);
+ b.innerHTML=`<div class="chat"><div class="toolbar"><button class="sb" data-up aria-label="Up one level">↑ Up</button><nav class="sm" style="display:flex;gap:2px;overflow:auto;white-space:nowrap">${['Root',...path].map((n,i)=>`<button class="crumb" data-go="${i}">${esc(n)}</button>`).join('<span class="m">›</span>')}</nav><span class="sp"></span><button class="sb" data-nd>New folder</button><button class="sb" data-nf>New file</button></div><div class="msgs list" style="padding:8px" id="fl"></div></div>`;
+ const list=$('#fl',b),d=fsAt(path)||{};
+ const names=Object.keys(d).sort((a,c)=>(isDir(d[c])-isDir(d[a]))||a.localeCompare(c,undefined,{numeric:true}));
+ list.innerHTML=names.length?names.map(k=>`<button class="item" data-open="${esc(k)}"><span>${isDir(d[k])?'📁':'📄'}</span>${esc(k)}<span class="sp"></span><span class="m sm">${isDir(d[k])?Object.keys(d[k]).length+' items':d[k].length+' chars'}</span></button>`).join(''):'<p class="m pad">This folder is empty.</p>';
+ b.onclick=e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.hasAttribute('data-up')){if(path.length>0){path.pop();RENDER.files(b,r)}}
+  else if(t.dataset.go!=null){const i=+t.dataset.go;r.path=path.slice(0,i);RENDER.files(b,r)}
+  else if(t.hasAttribute('data-nd'))newItem(path,'dir');
+  else if(t.hasAttribute('data-nf'))newItem(path,'file');
+  else if(t.dataset.open!=null){const k=t.dataset.open,p=[...path,k];if(isDir(fsAt(p))){r.path=p;RENDER.files(b,r)}else openFile(p)}};
+ const up=$('[data-up]',b);if(up)up.disabled=!path.length};
+
+const isFav=id=>S.fav.includes(id);
+RENDER.arcade=(b)=>{const q=()=>{const g=cards();$('#gl',b).innerHTML=g};
+ b.innerHTML=`<div class="chat"><div class="toolbar"><input id="gq" type="search" placeholder="Search games" aria-label="Search games" style="flex:1"></div><div class="pad" style="overflow:auto"><div class="grid" id="gl"></div></div></div>`;
+ const cards=()=>{const s=($('#gq',b).value||'').toLowerCase();const list=GAMES.filter(g=>(g.t+' '+g.c+' '+g.d).toLowerCase().includes(s));
+  return list.length?list.map(g=>`<div class="card gcard" style="--h:${g.h}"><div class="gart">${esc(g.t.split(' ').pop()[0])}</div><b>${esc(g.t)}</b><span class="m sm">${esc(g.c)} · ★ ${g.r}</span><p class="sm">${esc(g.d)}</p><div style="display:flex;gap:8px"><button class="pb" data-play="${g.id}">Play</button><button class="sb" data-fav="${g.id}">${isFav(g.id)?'★ Favorited':'☆ Favorite'}</button></div></div>`).join(''):'<p class="m pad">No games match your search.</p>'};
+ $('#gl',b).innerHTML=cards();
+ $('#gq',b).oninput=()=>$('#gl',b).innerHTML=cards();
+ b.onclick=e=>{const p=e.target.closest('[data-play]');if(p)playGame(p.dataset.play);const f=e.target.closest('[data-fav]');if(f){const id=f.dataset.fav,i=S.fav.indexOf(id);
+   if(i<0)S.fav.push(id);else S.fav.splice(i,1);save();$('#gl',b).innerHTML=cards()}}};
+
+function playGame(id){const g=GAMES.find(x=>x.id===id);if(!g)return;
+ openApp('g:'+id,{title:g.t,size:[640,500],render:(b)=>{
   if(g.src){b.innerHTML=`<iframe src="${esc(g.src)}" title="${esc(g.t)}" style="width:100%;height:100%;border:0" sandbox="allow-scripts allow-pointer-lock"></iframe>`;return}
-  b.innerHTML=`<div class="gm"><div class="tbr"><b>${esc(g.t)}</b><span class="sp"></span><span>Score <output>0</output></span></div><p class="nt2" style="padding:8px 14px">Placeholder build: catch the beacon to score. Set <code>src</code> on this game's entry in <code>G</code> to embed a real game.</p><div class="ga" style="--h:${g.h}"><button class="bc" aria-label="Catch the beacon"></button></div></div>`;
-  let s=0;const bc=$('.bc',b),o=$('output',b);bc.onclick=()=>{o.textContent=++s;bc.style.left=Math.random()*84+'%';bc.style.top=Math.random()*80+'%'}}});arcadeAll()}
+  b.innerHTML=`<div class="field" style="--h:${g.h}"><div class="toolbar"><b>${esc(g.t)}</b><span class="sp"></span>Score <output id="sc">0</output></div><p class="m sm pad">Placeholder game: catch the beacon. Add a <code>src</code> to this game in the GAMES list to embed a real one.</p><button class="beacon" aria-label="Catch the beacon"></button></div>`;
+  let s=0;const bc=$('.beacon',b);bc.onclick=()=>{$('#sc',b).textContent=++s;bc.style.left=(Math.random()*80+5)+'%';bc.style.top=(Math.random()*60+30)+'%'};bc.style.left='40%';bc.style.top='50%'}})}
 
-/* ===== Files ===== */
-function filesRender(b){if(!at(F.p))F.p=[];
- const cr=['Mythos',...F.p].map((n,i)=>`<button data-act="fgo:${esc(F.p.slice(0,i).join('/'))}">${esc(n)}</button>`).join('<span aria-hidden="true">›</span>');
- b.innerHTML=`<div class="fl"><div class="tbr"><button class="tb" data-act="fup" aria-label="Up one level"${F.p.length?'':' disabled'}>${ic('back')}</button><nav class="crumbs" aria-label="Breadcrumb">${cr}</nav><input id="fq" data-af type="search" placeholder="Search" value="${esc(F.q)}" aria-label="Search files" style="width:130px"><select id="fsort" aria-label="Sort by">${['name','type','size'].map(s=>`<option value="${s}"${F.s===s?' selected':''}>Sort: ${s}</option>`).join('')}</select><button class="sb" data-act="fview" aria-label="Switch between grid and list view">${F.v==='grid'?'List':'Grid'}</button><button class="pb" data-act="fnew:dir" style="padding:7px 14px">New folder</button></div><div class="fbody ${F.v}" id="fbody">${fitems()}</div></div>`}
-function fitems(){const d=at(F.p)||FS,l=[];
- if(F.q){const q=F.q.toLowerCase();walk(d,F.p,(k,p,n)=>{if(k.toLowerCase().includes(q))l.push([k,p,n])})}else for(const k in d)l.push([k,[...F.p,k],d[k]]);
- l.sort((a,b)=>{const x=isDir(a[2]),y=isDir(b[2]);if(x!==y)return x?-1:1;const byN=a[0].localeCompare(b[0],undefined,{numeric:true});return F.s==='size'?sz(a[2])-sz(b[2])||byN:F.s==='type'?ext(a[0]).localeCompare(ext(b[0]))||byN:byN});
- return l.length?l.map(([k,p,n])=>{const ps=esc(p.join('/'));return `<button class="fi" data-p="${ps}" data-dact="fopen:${ps}">${ic(isDir(n)?'folder':'file')}<span>${esc(k)}</span>${F.v==='list'?`<small>${size(n)}</small>`:''}</button>`}).join(''):`<p class="emp">${F.q?'No matches.':'This folder is empty. Right-click to create something.'}</p>`}
-const ffill=()=>{const e=$('#fbody');if(e)e.innerHTML=fitems()},filesAll=()=>{const w=W.files;if(w)filesRender($('.wb',w.el))};
-const fsChanged=()=>{save();filesAll();deskFill();if(view==='media')renderHome()};
-function fopen(ps){const p=split(ps),n=at(p);if(n===null)return;if(isDir(n)){F.p=p;F.q='';openApp('files');filesAll()}else viewFile(ps)}
-function viewFile(ps){const p=split(ps),n=at(p);if(typeof n!=='string')return;const nm=p[p.length-1];
- openWin('f:'+ps,{t:nm,i:'file',h:190,w:[560,420],r:b=>{b.innerHTML=`<div class="fl"><textarea class="ta" aria-label="Contents of ${esc(nm)}" spellcheck="false">${esc(n)}</textarea><div class="tbr"><small class="nt2">/${esc(p.join('/'))}</small><span class="sp"></span><output class="nt2"></output><button class="pb" style="padding:7px 16px">Save</button></div></div>`;
-  $('button',b).onclick=()=>{const d=at(p.slice(0,-1));if(d&&nm in d){d[nm]=$('textarea',b).value;save();$('output',b).textContent='Saved'}}}})}
-async function fnew(kind,base){const p=base||F.p,d=at(p);if(!d)return;const nm=await ask(kind==='dir'?'New folder':'New file',{v:uniq(d,kind==='dir'?'New folder':'Untitled.txt'),ok:'Create'});if(nm===null)return;const n=cleanName(nm);if(!n)return;
- if(n in d){notify('Files','“'+n+'” already exists here.','folder');return}d[n]=kind==='dir'?norm({}):'';fsChanged()}
-async function frename(ps){const p=split(ps),old=p.pop(),d=at(p);if(!d||!(old in d))return;const nm=await ask('Rename',{v:old,ok:'Rename'});if(nm===null)return;const n=cleanName(nm);if(!n||n===old)return;
- if(n in d){notify('Files','“'+n+'” already exists here.','folder');return}d[n]=d[old];delete d[old];if(W['f:'+ps])closeWin('f:'+ps);fsChanged()}
-async function fdel(ps){const p=split(ps),n=p.pop(),d=at(p);if(!d||!(n in d))return;if(await ask('Delete “'+n+'”?',{m:'This cannot be undone.',ok:'Delete'})){delete d[n];if(W['f:'+ps])closeWin('f:'+ps);fsChanged()}}
-async function fprops(ps){const p=split(ps),n=at(p);if(n===null)return;await ask('Properties',{m:p[p.length-1]+': '+(isDir(n)?'Folder':'File')+', '+size(n)+', located at /'+p.join('/'),ok:'Close'})}
+RENDER.ai=(b)=>{const hist=[{r:'a',t:'Hi, I am Mythos AI, a local assistant. Ask what MythosOS can do, or tell me what to open.'}];
+ b.innerHTML=`<div class="chat"><div class="msgs" id="ml" role="log" aria-live="polite"></div><form class="cin"><input aria-label="Message Mythos AI" placeholder="Ask Mythos AI" autocomplete="off"><button class="pb">Send</button></form></div>`;
+ const ml=$('#ml',b),show=()=>{ml.innerHTML=hist.map(m=>`<div class="msg ${m.r==='u'?'u':''}">${esc(m.t)}</div>`).join('');ml.scrollTop=ml.scrollHeight};show();
+ $('form',b).onsubmit=e=>{e.preventDefault();const i=$('input',b),t=i.value.trim();if(!t)return;i.value='';hist.push({r:'u',t});const res=aiLocal(t);hist.push({r:'a',t:res.t});show();if(res.run)res.run()}};
+function aiLocal(t){const q=t.toLowerCase();const appHit=Object.entries(APPS).find(([id,a])=>q.includes(id)||q.includes(a.n.toLowerCase()));
+ if(/^(hi|hello|hey)\b/.test(q))return{t:'Hello! Ask what MythosOS can do, or tell me what to open.'};
+ if(/open|launch|start|show/.test(q)&&appHit)return{t:'Opening '+appHit[1].n+'.',run:()=>openApp(appHit[0])};
+ if(/wallpaper|background/.test(q))return{t:'Use Settings › Wallpaper, or right-click the desktop and choose Change wallpaper.'};
+ if(/dark|light|theme/.test(q)){cmd('theme');return{t:'Theme switched to '+(S.theme==='light'?'light':'dark')+'.'}}
+ if(/favorite/.test(q))return{t:S.fav.length?'Your favorites: '+S.fav.map(id=>GAMES.find(g=>g.id===id).t).join(', ')+'.':'No favorites yet. Star a game in Arcade.'};
+ if(/time|date/.test(q))return{t:'It is '+new Date().toLocaleString()+'.'};
+ if(/game|play/.test(q)){const g=GAMES[Math.floor(Math.random()*GAMES.length)];return{t:'Try '+g.t+': '+g.d,run:()=>playGame(g.id)}}
+ if(/what can|help|mythos/.test(q))return{t:'I can open apps, switch themes, list favorites, tell you the time and suggest games. Press Ctrl+Space for the launcher.'};
+ return{t:'I am a small local assistant, so I may miss that one. Try "open files" or "suggest a game".'}};
 
-/* ===== Mythos AI (local responder; set AI.endpoint to connect a real backend) ===== */
-const AIP=['What can MythosOS do?','Open Settings.','How do I change my wallpaper?','Show me my recent apps.'];
-function aiLocal(t){const q=t.toLowerCase(),has=w=>new RegExp('\\b'+w).test(q),app=Object.entries(APPS).find(([id,a])=>has(id)||has(a.n.toLowerCase()));
- if(/^(hi|hello|hey)\b/.test(q))return{t:'Hello! Ask me what MythosOS can do, or tell me what to open.'};
- if(has('recent')){const r=S.rec.map(x=>x.k==='a'?APPS[x.id].n:G.find(g=>g.id===x.id).t);return{t:r.length?'Recently used: '+r.slice(0,6).join(', ')+'.':'Nothing yet. Open an app or play a game and it will show up here.'}}
- if(has('wallpaper')||has('background'))return{t:'Settings > Personalization > Wallpaper has seven options. You can also right-click the desktop and choose Change Wallpaper.',a:[['Open Personalization','sc:Personalization'],['Next wallpaper','wall:next']]};
- if(/dark mode|light mode|theme/.test(q)){if(/dark/.test(q)){S.theme='dark';apply();save();return{t:'Switched to Mythos Dark.'}}if(/light/.test(q)){S.theme='light';apply();save();return{t:'Switched to Mythos Light.'}}return{t:'There are six themes. Pick one in Personalization.',a:[['Open Personalization','sc:Personalization']]}}
- if(app&&/open|launch|start|show/.test(q))return{t:'Opening '+app[1].n+'.',run:'app:'+app[0]};
- if(has('favorite'))return{t:S.fav.length?'Your favorites: '+S.fav.map(id=>G.find(g=>g.id===id).t).join(', ')+'.':'No favorites yet. Tap the heart on any game in Arcade.',a:[['Open Arcade','acat:Favorites']]};
- if(has('time')||has('date'))return{t:'It is '+new Date().toLocaleString()+'.'};
- if(has('sentinel')||has('privacy')||has('secure'))return{t:'Sentinel reports on the MythosOS simulation, and everything stays in this browser.',a:[['Open Sentinel','app:sentinel']]};
- if(has('game')||has('play')){const g=G[Math.floor(Math.random()*G.length)];return{t:'Try '+g.t+': '+g.d,a:[['View '+g.t,'gdet:'+g.id]]}}
- if(/what can|help|do you|can you|mythosos/.test(q))return{t:'I can open apps, switch themes, list your recent apps and favorites, and point you to settings. Press Ctrl+Space for the launcher or Ctrl+Shift+P for commands.'};
- return{t:'I am a small local assistant, so I may miss that one. Try "open files", "recent apps" or "change wallpaper".'}}
-const AI={endpoint:null,async ask(t){if(this.endpoint){try{const r=await fetch(this.endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt:t})}),j=await r.json();if(j&&typeof j.reply==='string')return{t:j.reply}}catch(e){}}await new Promise(r=>setTimeout(r,450));return aiLocal(t)}};
-function aiRender(b){b.innerHTML=`<div class="ch"><div class="msgs" id="msgs" role="log" aria-live="polite"></div><div class="sug">${AIP.map(p=>`<button class="pill" data-act="ask:${esc(p)}">${esc(p)}</button>`).join('')}<button class="pill" data-act="aiclr">New chat</button></div><form class="cin"><input data-af aria-label="Message Mythos AI" placeholder="Ask Mythos AI" autocomplete="off"><button class="pb">Send</button></form><small class="nt2">Local assistant running in your browser. No cloud model is connected.</small></div>`;aiFill()}
-function aiFill(typing){const m=$('#msgs');if(!m)return;m.innerHTML=(S.chat.length?S.chat:[{r:'a',t:'Hi, I am Mythos AI, a local assistant built into this prototype. Ask me about MythosOS or tell me what to open.'}]).map(x=>`<div class="mg ${x.r}">${esc(x.t)}${x.a&&x.a.length?`<div class="qa">${x.a.map(([l,a])=>`<button class="pill" data-act="${esc(a)}">${esc(l)}</button>`).join('')}</div>`:''}</div>`).join('')+(typing?'<div class="mg a" aria-label="Mythos AI is typing">…</div>':'');m.scrollTop=m.scrollHeight}
-async function aiSend(text){text=text.trim();if(!text)return;S.chat.push({r:'u',t:text});aiFill(true);const r=await AI.ask(text);S.chat.push({r:'a',t:r.t,a:r.a});S.chat=S.chat.slice(-40);save();aiFill();if(r.run)act(r.run)}
+RENDER.sentinel=(b)=>{const st=(()=>{try{localStorage.setItem('mythos.t','1');localStorage.removeItem('mythos.t');return true}catch(e){return false}})();
+ let n=0;fsWalk(S.fs,[],()=>n++);
+ const checks=[['Local storage',st,st?'Preferences save in this browser':'Unavailable: changes will not persist'],['Virtual files',true,n+' items'],['Windows',true,wins.size+' open'],['Network',navigator.onLine,navigator.onLine?'Online':'Offline (MythosOS does not need a connection)']];
+ const good=checks.every(c=>c[1]);
+ b.innerHTML=`<div class="pad"><h2>Sentinel</h2><p>${good?'MythosOS is operating normally.':'Some checks need attention.'}</p><div style="margin-top:10px">${checks.map(([a,ok,d])=>`<div class="row"><div>${a}<div class="m sm">${esc(d)}</div></div><b style="color:${ok?'#48bb78':'#e53e3e'}">${ok?'Healthy':'Attention'}</b></div>`).join('')}</div><p class="m sm pad" style="padding:14px 0 0">Sentinel watches this MythosOS simulation. It does not scan your device.</p></div>`};
 
-/* ===== Sentinel ===== */
-const browser=()=>{const b=navigator.userAgentData&&navigator.userAgentData.brands.find(x=>!/not.?a.?brand|chromium/i.test(x.brand));return b?b.brand+' '+b.version:'unknown browser'};
-function checks(){let st=true,c=0;try{localStorage.setItem('mythos.t','1');localStorage.removeItem('mythos.t')}catch(e){st=false}walk(FS,[],()=>c++);
- return[['Virtual filesystem',true,c+' items stored locally'],['Local storage',st,st?'Preferences persist in this browser':'Unavailable: changes will not persist'],['Applications',true,order.length+' window(s) open'],['Notifications',true,N.filter(n=>!n.read).length+' unread'],['Browser environment',true,browser()+(navigator.onLine?', online':', offline'),'Detected']]}
-function sentinelRender(b){const c=checks(),good=c.every(x=>x[1]);
- b.innerHTML=`<div class="main"><h1 style="font-size:2em">Sentinel</h1><p>${good?'MythosOS is operating normally.':'Some checks need attention.'}</p>${c.map(([n,o,d,l])=>row(n,esc(d),`<b class="${o?'g':'w'}">${ic(o?'check':'warn')} ${o?l||'Healthy':'Attention'}</b>`)).join('')}<h3>Privacy and permissions</h3><p>MythosOS asks for no browser permissions. Fullscreen only happens when you request it, and nothing leaves this browser.</p><div class="hb"><button class="pb" data-act="sen">Run check</button></div><p class="nt2" style="margin-top:14px">Sentinel watches the MythosOS simulation. It is not antivirus software and does not scan your device.</p></div>`}
+RENDER.settings=(b)=>{const sw=(on)=>`<button class="tog" role="switch" aria-checked="${on}"></button>`;
+ const sw2=(opts,cur,key)=>`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr))">${opts.map(([v,l,css])=>`<button class="card opt" aria-pressed="${String(cur)===String(v)}" data-set="${key}:${esc(v)}">${css?`<span class="swatch" style="background:${css}"></span>`:''}${esc(l)}</button>`).join('')}</div>`;
+ b.innerHTML=`<div class="pad" style="overflow:auto;height:100%"><h2>Theme</h2>${sw2(Object.entries(THEMES),S.theme,'theme')}
+ <h2 style="margin-top:20px">Wallpaper</h2>${sw2(Object.entries(WALLS).map(([k,[n,c]])=>[k,n,c]),S.wall,'wall')}
+ <h2 style="margin-top:20px">Accent</h2>${sw2(ACCENTS.map(c=>[c,c,c]),S.accent,'accent')}
+ <h2 style="margin-top:20px">Behavior</h2><div class="row"><div>Animations<div class="m sm">Turn off for reduced motion</div></div><button class="tog" role="switch" aria-label="Animations" aria-checked="${S.motion}" data-set="motion:${!S.motion}"></button></div>
+ <div class="row"><div>Pinned apps<div class="m sm">${S.pins.length} pinned to taskbar</div></div><button class="sb" data-reset-pins>Reset</button></div>
+ <h2 style="margin-top:20px">Data</h2><div class="row"><div>Reset MythosOS<div class="m sm">Clears preferences, favorites, notes and files in this browser</div></div><button class="sb" data-reset>Reset…</button></div></div>`;
+ b.onclick=e=>{const s=e.target.closest('[data-set]');if(s){const[k,...rest]=s.dataset.set.split(':');const v=rest.join(':');
+   if(k==='motion')S.motion=v==='true';else if(k==='accent')S.accent=v;else if(k==='theme')S.theme=THEMES[v]?v:S.theme;else if(k==='wall')S.wall=WALLS[v]?v:S.wall;
+   applyTheme();save();RENDER.settings(b);return}
+  if(e.target.closest('[data-reset-pins]')){S.pins=[...DEF.pins];save();updateTasks();toast('Settings','Taskbar pins restored','⚙️')}
+  if(e.target.closest('[data-reset]')){if(confirm('Reset MythosOS? This clears everything stored in this browser.')){try{localStorage.removeItem(KEY)}catch(_){}location.reload()}}}};
 
-/* ===== Settings ===== */
-const row=(t,s,c='')=>`<div class="rw"><div>${t}<small>${s}</small></div><div>${c}</div></div>`;
-const swt=(a,l,on)=>`<span class="nt2">${on?'On':'Off'}</span> <button class="sx" role="switch" aria-checked="${on}" aria-label="${l}" data-act="${a}"></button>`;
-const opts=(k,l,cur)=>`<div class="sg">${l.map(([v,n,bg])=>`<button class="op" aria-pressed="${String(cur)===String(v)}" data-act="set:${k}:${v}">${bg?`<span class="sw" style="background:${bg}"></span>`:''}${n}</button>`).join('')}</div>`;
-const kb=()=>(new Blob([ls.get(KEY)||'']).size/1024).toFixed(1)+' KB';
-const ANIM=[[2,'Full'],[1,'Reduced'],[0,'Off']];
-const SP={
-System:()=>`<h3>System</h3>${row('Version','Prototype build','MythosOS 0.1')}${row('Session','Started '+new Date(T0).toLocaleTimeString(),Math.max(1,Math.round((Date.now()-T0)/6e4))+' min')}${row('Browser',esc(navigator.userAgent.slice(0,80)),esc(navigator.language))}${row('Storage used','Preferences and virtual files, saved in this browser',kb())}`,
-Personalization:()=>`<h3>Theme</h3>${opts('theme',Object.entries(THEMES).map(([k,n])=>[k,n,`linear-gradient(135deg,${THC[k][0]} 60%,${THC[k][1]} 60%)`]),S.theme)}<h3>Wallpaper</h3>${opts('wall',Object.entries(WALLS).map(([k,[n,b]])=>[k,n,b]),S.wall)}<h3>Accent</h3>${opts('accent',[['','Theme default'],...ACC.map(c=>[c,c,c])],S.accent)}<h3>Animation intensity</h3>${opts('anim',ANIM,S.anim)}<h3>Interface mode</h3><div class="sg">${['home','desktop'].map(m=>`<button class="op" aria-pressed="${S.mode===m}" data-act="mode:${m}">${m==='home'?'Home':'Desktop'}</button>`).join('')}</div><h3>Profile</h3>${row('Display name','Local profile, never uploaded',`<input id="pname" value="${esc(S.name)}" maxlength="24" aria-label="Display name">`)}`,
-Applications:()=>'<h3>Applications</h3>'+Object.entries(APPS).map(([id,a])=>row(esc(a.n)+' in taskbar',esc(a.d),swt('pin:'+id,'Pin '+a.n,S.pins.includes(id)))).join(''),
-Gaming:()=>`<h3>Gaming</h3>${row('Favorites',S.fav.length+' games','<button class="sb" data-act="favclr">Clear</button>')}${row('Recently played',S.rec.filter(r=>r.k==='g').length+' games','<button class="sb" data-act="recclr">Clear</button>')}`,
-Notifications:()=>`<h3>Notifications</h3>${row('Do Not Disturb','Mute pop-ups. Notifications still collect in the center.',swt('tg:dnd','Do Not Disturb',S.dnd))}${row('Notification center',N.length+' this session','<button class="sb" data-act="nclr">Clear all</button>')}`,
-Privacy:()=>`<h3>Privacy</h3>${row('Where data lives','Everything stays in this browser. MythosOS makes no network requests.','')}${row('Reset MythosOS','Clears preferences, favorites and virtual files','<button class="sb" data-act="reset">Reset…</button>')}`,
-Accessibility:()=>`<h3>Motion</h3>${opts('anim',ANIM,S.anim)}<p class="nt2">Your system's reduced-motion setting is always respected.</p><h3>Performance</h3>${row('Lite mode','Removes blur and shadows',swt('tg:perf','Lite mode',S.perf))}`,
-Keyboard:()=>'<h3>Keyboard</h3>'+[['Launcher','Ctrl+Space'],['Command palette','Ctrl+Shift+P'],['Settings','Ctrl+,'],['Switch windows','Alt+Tab or Alt+`'],['Close overlay','Esc'],['Move between cards','Arrow keys']].map(([a,b])=>row(a,'',`<kbd>${b}</kbd>`)).join(''),
-About:()=>'<h3>About MythosOS</h3><p>Your world. Your system.</p><p class="nt2">Prototype 0.1. A single-file web desktop with no frameworks and no network.</p>'};
-function settingsRender(b){b.innerHTML=`<div class="se"><nav class="side" aria-label="Settings categories">${SCATS.map(c=>`<button class="si${c===ST.cat?' on':''}" data-act="sc:${c}"${c===ST.cat?' aria-current="true"':''}>${c}</button>`).join('')}</nav><div class="main">${SP[ST.cat]()}</div></div>`}
-const settingsAll=()=>{const w=W.settings;if(w)settingsRender($('.wb',w.el))},sentinelAll=()=>{const w=W.sentinel;if(w)sentinelRender($('.wb',w.el))};
-const RENDER={arcade:arcadeRender,files:filesRender,ai:aiRender,sentinel:sentinelRender,settings:settingsRender};
+/* ---------- Theme ---------- */
+function applyTheme(){const r=document.documentElement;r.dataset.theme=S.theme;r.dataset.motion=S.motion?'on':'off';
+ r.style.setProperty('--a',S.accent);r.style.setProperty('--ai',lum(S.accent)>.45?'#10140f':'#fff');
+ document.getElementById('wall').style.background=WALLS[S.wall][1];
+ const meta=WALLS[S.wall];document.getElementById('wall').dataset.name=meta[0]}
+function lum(h){const[r,g,b]=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);return .2126*r+.7152*g+.0722*b}
 
-/* ===== Context menu ===== */
-const cm=$('#cm'),hideMenu=()=>cm.classList.remove('show');
-function menu(x,y,items){cm.innerHTML=items.map(i=>i?`<button role="menuitem" data-act="${esc(i[1])}">${esc(i[0])}</button>`:'<hr>').join('');cm.className='show';const r=cm.getBoundingClientRect();cm.style.left=clamp(x,4,innerWidth-r.width-4)+'px';cm.style.top=clamp(y,4,innerHeight-r.height-4)+'px';$('button',cm).focus()}
-addEventListener('contextmenu',e=>{const t=e.target;if(t.closest('input,textarea,select,dialog,#cm'))return;let it=null;const f=t.closest('[data-p]'),g=t.closest('[data-g]');
- if(f){const p=f.dataset.p;it=[['Open','fopen:'+p],['Rename','frename:'+p],['Delete','fdel:'+p],null,['Properties','fprops:'+p]]}
- else if(g){const id=g.dataset.g;it=[['Play','game:'+id],[S.fav.includes(id)?'Remove favorite':'Favorite','fav:'+id],['Details','gdet:'+id]]}
- else if(t.closest('.fbody'))it=[['New folder','fnew:dir'],['New text file','fnew:file'],['Refresh','fref']];
- else if(!t.closest('.win,#top,#dock,.ov')&&t.closest('#desk,#wall,#home'))it=[['New Folder','dnew'],['Change Wallpaper','wall:next'],['Refresh','dref'],null,['Open Settings','app:settings'],['Open Arcade','app:arcade'],null,['Display Mode: '+(S.mode==='home'?'Desktop':'Home'),'mode:'+(S.mode==='home'?'desktop':'home')]];
- if(it){e.preventDefault();menu(e.clientX,e.clientY,it)}});
+/* ---------- Commands & launcher ---------- */
+function cmd(c){if(c==='wall'){const k=Object.keys(WALLS);S.wall=k[(k.indexOf(S.wall)+1)%k.length];applyTheme();save();toast('Wallpaper',WALLS[S.wall][0],'🖼️')}
+ else if(c==='theme'){S.theme=S.theme==='light'?'dark':'light';applyTheme();save()}
+ else if(c==='motion'){S.motion=!S.motion;applyTheme();save();toast('Animations',S.motion?'On':'Off','⚙️')}
+ else if(c==='min'){[...wins.keys()].forEach(minWin)}
+ else if(c==='newdir'){newItem(['Desktop'],'dir')}}
+function openLauncher(){const lau=$('#lau');lau.hidden=false;$('#lq').value='';renderLauncher('');$('#lq').focus()}
+function closeLauncher(){$('#lau').hidden=true}
+function renderLauncher(q){q=q.trim().toLowerCase();const items=[];
+ Object.entries(APPS).forEach(([id,a])=>items.push({t:a.n,s:'Application',ic:a.ic,f:()=>openApp(id)}));
+ GAMES.forEach(g=>items.push({t:g.t,s:'Game · '+g.c,ic:'🎮',f:()=>playGame(g.id)}));
+ COMMANDS.forEach(([t,c])=>items.push({t,s:'Command',ic:'⌘',f:()=>cmd(c.split(':')[1])}));
+ const hits=(q?items.filter(i=>(i.t+' '+i.s).toLowerCase().includes(q)):items).slice(0,12);
+ $('#lr').innerHTML=hits.length?hits.map((i,n)=>`<button class="res${n===0?' sel':''}" data-i="${n}"><span class="ico" style="--c:#444">${i.ic}</span><span><b>${esc(i.t)}</b><small>${esc(i.s)}</small></span></button>`).join(''):'<p class="pad m">Nothing matches.</p>';
+ window._hits=hits}
+function pickLauncher(i){const h=window._hits&&window._hits[i];if(!h)return;closeLauncher();h.f()}
+$('#lq').addEventListener('input',e=>renderLauncher(e.target.value));
+$('#lr').addEventListener('click',e=>{const b=e.target.closest('[data-i]');if(b)pickLauncher(+b.dataset.i)});
+$('#lau').addEventListener('click',e=>{if(e.target.id==='lau')closeLauncher()});
+$('#start').onclick=()=>$('#lau').hidden?openLauncher():closeLauncher();
+$('#lq').addEventListener('keydown',e=>{const sel=[...document.querySelectorAll('#lr .res')];if(!sel.length)return;let i=sel.findIndex(x=>x.classList.contains('sel'));
+ if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();sel[i]?.classList.remove('sel');i=(i+(e.key==='ArrowDown'?1:-1)+sel.length)%sel.length;sel[i].classList.add('sel');sel[i].scrollIntoView({block:'nearest'})}
+ else if(e.key==='Enter'){e.preventDefault();pickLauncher(+sel[Math.max(i,0)].dataset.i)}});
 
-/* ===== Actions (single delegated dispatcher) ===== */
-function act(a){const i=a.indexOf(':'),k=i<0?a:a.slice(0,i),v=i<0?'':a.slice(i+1);switch(k){
-case'app':openApp(v);break;
-case'game':playGame(v);break;
-case'gdet':arc.g=v;arc.q='';openApp('arcade');arcadeAll();break;
-case'acat':arc.cat=v;arc.g=null;openApp('arcade');arcadeAll();break;
-case'aback':arc.g=null;arcadeAll();break;
-case'fav':keepFocus(()=>toggleFav(v));break;
-case'mode':setMode(v);keepFocus(settingsAll);break;
-case'view':view=v;if(S.mode==='home')order.forEach(x=>W[x].el.classList.add('min'));renderHome();sync();break;
-case'feat':feat=+v;keepFocus(heroFill);break;
-case'ov':ovOpen(v);break;
-case'dock':dockClick(v);break;
-case'cc':ccAct(v);break;
-case'theme':S.theme=S.theme==='light'?'dark':'light';apply();save();keepFocus(settingsAll);break;
-case'wall':{const ks=Object.keys(WALLS);S.wall=ks[(ks.indexOf(S.wall)+1)%ks.length];apply();save();toast('Wallpaper',WALLS[S.wall][0],'apps');keepFocus(settingsAll)}break;
-case'fs':toggleFS();break;
-case'swstart':ovClose();swStep(1);break;
-case'swp':if(sw){sw.i=+v;swEnd(true)}break;
-case'sc':ST.cat=v;openApp('settings');settingsAll();break;
-case'set':{const j=v.indexOf(':'),key=v.slice(0,j),val=v.slice(j+1);S[key]=key==='anim'?+val:val;apply();save();keepFocus(settingsAll)}break;
-case'tg':S[v]=!S[v];apply();save();keepFocus(settingsAll);break;
-case'pin':{const j=S.pins.indexOf(v);if(j<0)S.pins.push(v);else S.pins.splice(j,1);save();dockFill();keepFocus(settingsAll)}break;
-case'ask':aiSend(v);break;
-case'aiclr':S.chat=[];save();aiFill();break;
-case'nclr':N.length=0;badge();if(OV==='nc')ncFill();keepFocus(settingsAll);break;
-case'ndel':{const j=N.findIndex(x=>x.id===+v);if(j>=0)N.splice(j,1);badge();ncFill()}break;
-case'sen':{sentinelAll();const bad2=checks().some(c=>!c[1]);notify('Sentinel',bad2?'Check complete: something needs attention.':'Check complete: all MythosOS systems are healthy.','shield')}break;
-case'favclr':S.fav=[];save();renderHome();arcadeAll();keepFocus(settingsAll);break;
-case'recclr':S.rec=S.rec.filter(r=>r.k!=='g');S.played={};save();renderHome();arcadeAll();keepFocus(settingsAll);break;
-case'reset':ask('Reset MythosOS?',{m:'This clears preferences, favorites and the virtual file system stored in this browser, then reloads.',ok:'Reset'}).then(ok=>{if(ok){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}});break;
-case'fopen':fopen(v);break;
-case'fup':F.p=F.p.slice(0,-1);F.q='';filesAll();break;
-case'fgo':F.p=split(v);F.q='';filesAll();break;
-case'fview':F.v=F.v==='grid'?'list':'grid';filesAll();break;
-case'fnew':fnew(v);break;case'frename':frename(v);break;case'fdel':fdel(v);break;case'fprops':fprops(v);break;
-case'fref':filesAll();break;
-case'dnew':fnew('dir',['Desktop']);break;
-case'dref':deskFill();toast('Desktop','Refreshed','apps');break;
-case'signout':lock();break;
-case'unlock':os.inert=false;$('#boot').classList.add('off');break}}
+/* ---------- Keyboard ---------- */
+addEventListener('keydown',e=>{
+ if(e.ctrlKey&&e.code==='Space'){e.preventDefault();$('#lau').hidden?openLauncher():closeLauncher();return}
+ if(e.key==='Escape'){if(!$('#lau').hidden)closeLauncher();else hideCtx();return}
+ if(e.altKey&&e.key==='Tab'){e.preventDefault();const list=[...wins.values()];if(list.length>1){const cur=list.findIndex(r=>r.el.classList.contains('on'));focusWin(list[(cur+1)%list.length].key)}}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='w'&&document.activeElement.closest('.win')){e.preventDefault();const r=[...wins.values()].find(x=>x.el.contains(document.activeElement));if(r)closeWin(r.key)}});
 
-document.addEventListener('click',e=>{const t=e.target;
- if(!t.closest('#cm'))hideMenu();
- if(t.classList.contains('ov')){t.id==='swt'?swEnd(false):ovClose();return}
- const w=t.closest('[data-w]');if(w){wact(w.closest('.win').dataset.k,w.dataset.w);return}
- const d=t.closest('[data-dact]');
- if(d){$$('.pick').forEach(x=>x.classList.remove('pick'));d.classList.add('pick');if(e.detail===0||coarse)act(d.dataset.dact);return}
- if(!t.closest('.di,.fi'))$$('.pick').forEach(x=>x.classList.remove('pick'));
- const a=t.closest('[data-act]');if(!a)return;
- if(a.classList.contains('res'))ovClose();if(a.closest('#cm'))hideMenu();act(a.dataset.act)});
-document.addEventListener('dblclick',e=>{const d=e.target.closest('[data-dact]');if(d){act(d.dataset.dact);return}const t=e.target.closest('.wt');if(t&&!e.target.closest('button'))wact(t.closest('.win').dataset.k,'max')});
-document.addEventListener('input',e=>{const t=e.target;if(t.id==='lq')lauList(t.value);else if(t.id==='pq')palList(t.value);else if(t.id==='asq'){arc.q=t.value;arcFill()}else if(t.id==='fq'){F.q=t.value;ffill()}});
-document.addEventListener('change',e=>{const t=e.target;if(t.id==='pname'){S.name=t.value.trim().slice(0,24)||D.name;save();$('#av').textContent=S.name[0].toUpperCase()}else if(t.id==='fsort'){F.s=t.value;filesAll()}});
-document.addEventListener('submit',e=>{if(e.target.matches('.cin')){e.preventDefault();const i=$('input',e.target);aiSend(i.value);i.value=''}});
-addEventListener('keydown',e=>{if($('#dlg').open)return;const k=e.key,mod=e.ctrlKey||e.metaKey;
- if(e.ctrlKey&&e.code==='Space'){e.preventDefault();ovOpen('lau');return}
- if(mod&&e.shiftKey&&k.toLowerCase()==='p'){e.preventDefault();ovOpen('pal');return}
- if(mod&&k===','){e.preventDefault();openApp('settings');return}
- if(e.altKey&&(k==='Tab'||k==='`')){e.preventDefault();swStep(e.shiftKey?-1:1);return}
- const m=cm.classList.contains('show');
- if(k==='Escape'){if(m)hideMenu();else if(sw)swEnd(false);else ovClose();return}
- if(m&&(k==='ArrowDown'||k==='ArrowUp')){e.preventDefault();const b=$$('#cm button'),i=b.indexOf(document.activeElement);b[(i+(k==='ArrowDown'?1:-1)+b.length)%b.length].focus();return}
- if(OV==='lau'||OV==='pal'){if(k==='ArrowDown'||k==='ArrowUp'){e.preventDefault();selMove(k==='ArrowDown'?1:-1)}else if(k==='Enter'){const s=$('#'+OV+' .res.sel')||$('#'+OV+' .res');if(s){e.preventDefault();s.click()}}return}
- if(k.startsWith('Arrow')&&e.target.closest&&e.target.closest('#home'))hnav(e)});
-addEventListener('keyup',e=>{if(e.key==='Alt'&&sw)swEnd(true)});
+/* ---------- Clock ---------- */
+function tick(){const d=new Date();$('#clk b').textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});$('#clk span').textContent=d.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'})}
 
-/* ===== Clock ===== */
-let lastDay='';function tick(){const d=new Date(),c=$('#clk');$('b',c).textContent=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});const s=d.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'});if(s!==lastDay){lastDay=s;$('small',c).textContent=s}}
-
-/* ===== Boot ===== */
-apply();$('#av').textContent=S.name[0].toUpperCase();os.dataset.mode=S.mode;if(S.mode==='desktop')$('#dock').append($('#tray'));
-renderHome();deskFill();sync();tick();setInterval(tick,1000);
-[['Mythos Arcade','Welcome to MythosOS.','arcade',3],['Sentinel','System simulation is running normally.','shield',2],['Mythos AI','Ready when you are.','ai',1]].forEach(([a,m,i,n])=>notify(a,m,i,true,Date.now()-n*6e4));
-if(bad)notify('MythosOS','Some MythosOS preferences could not be restored. Default settings have been loaded.','warn');
-else setTimeout(()=>{if(!S.dnd)toast('Mythos Arcade','Welcome to MythosOS.','arcade')},1300);
-setTimeout(()=>$('#boot').classList.add('off'),S.anim?900:0);
+/* ---------- Boot ---------- */
+applyTheme();renderDesktop();updateTasks();tick();setInterval(tick,15000);
+toast('MythosOS 0.2','Welcome back. Press Ctrl+Space to search.','🌅');
 </script>
 </body>
 </html>
