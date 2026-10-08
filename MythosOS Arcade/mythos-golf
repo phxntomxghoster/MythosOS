@@ -1,1 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mythos Golf</title>
+<style>
+body{margin:0;background:#0d2a2a;color:#eee;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+#hud{padding:10px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center}
+button{background:#1f4d3d;color:#eee;border:1px solid #3b7;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px}
+button.sel{background:#2f9e6a}
+canvas{background:#8fd3ff;max-width:100%;height:auto;border-radius:8px;touch-action:none}
+#msg{min-height:1.4em;padding:8px;text-align:center}
+</style>
+</head>
+<body>
+<div id="hud">
+  <span id="info"></span>
+  <button data-c="0">Driver (1)</button>
+  <button data-c="1">Iron (2)</button>
+  <button data-c="2">Putter (3)</button>
+  <span id="angle"></span>
+</div>
+<canvas id="c" width="800" height="450"></canvas>
+<div id="msg">Hold Space (or mouse/touch) to charge, release to swing. Up/Down: angle. 1/2/3: club. R: restart.</div>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+const VW=800,VH=450,GRAV=0.5;
+const CLUBS=[{name:'Driver',power:17,angle:35,len:26},{name:'Iron',power:12.5,angle:50,len:22},{name:'Putter',power:4.5,angle:0,len:14}];
+const PAR=[3,4,5,3,4,4,3,5,4,4,3,4,5,3,4,4,4,5];
+const PARTOTAL=PAR.reduce((a,b)=>a+b,0);
 
+let hole=0,strokes=0,totalStrokes=0,club=0,angle=CLUBS[0].angle;
+let charging=false,phase=0,power=0;
+let ball=null,holed=false,holeTimer=0,finished=false;
+let W=1000,cupX=900,seed=0,camX=0;
+let hazards=[],wind=0,lastLieX=60;
+const char={x:60,y:0};
+
+function ground(x){
+  const s=seed;
+  let y=330+45*Math.sin(x*0.008+s)+20*Math.sin(x*0.021+s*2);
+  const gs=cupX-160;
+  if(x>gs){const t=Math.min(1,(x-gs)/160);y=y*(1-t)+400*t;}
+  return y;
+}
+function slope(x){return (ground(x+3)-ground(x-3))/6;}
+function inRange(x,t){return hazards.some(h=>h.type===t&&x>=h.x1&&x<=h.x2);}
+function inWater(x){return inRange(x,'water');}
+function inSand(x){return inRange(x,'sand');}
+function splash(){
+  strokes++; totalStrokes++;
+  ball=null; char.x=lastLieX; char.y=ground(char.x);
+  msg('Penalty! Ball lost in a hazard, +1 stroke. Re-hit from your last spot.');
+  updateHud();
+}
+
+function msg(t){document.getElementById('msg').textContent=t;}
+function updateHud(){
+  document.getElementById('info').textContent=`Hole ${hole+1}/18 · Par ${PAR[hole]} · Strokes ${strokes} · Total ${totalStrokes} · Wind ${wind>=0?'→':'←'} ${Math.abs(wind).toFixed(1)}`;
+  document.getElementById('angle').textContent=club===2?'Angle: flat':`Angle: ${angle}°`;
+  document.querySelectorAll('button[data-c]').forEach(b=>b.classList.toggle('sel',+b.dataset.c===club));
+}
+function canAct(){return !finished && !holed && (!ball || ball.rest);}
+
+function setupHole(){
+  W=700+PAR[hole]*150; cupX=W-90; seed=hole*1.7+0.3;
+  char.x=60; char.y=ground(60);
+  ball=null; strokes=0; holed=false; holeTimer=0; camX=0; lastLieX=char.x;
+  wind=Math.sin(seed*3.1)*0.8;
+  hazards=[];
+  const nb=PAR[hole]>=4?2:1;
+  for(let i=0;i<nb;i++){
+    const x1=260+i*(cupX-500)/nb+Math.abs(Math.sin(seed*(i+2)))*60;
+    hazards.push({type:'sand',x1,x2:x1+60+Math.abs(Math.cos(seed*(i+4)))*40});
+  }
+  if(PAR[hole]>=4){
+    const wx1=cupX-300-Math.abs(Math.sin(seed*7))*60;
+    hazards.push({type:'water',x1:wx1,x2:wx1+50});
+  }
+  updateHud();
+  msg(`Hole ${hole+1} · Par ${PAR[hole]}`);
+}
+function restart(){
+  hole=0; totalStrokes=0; finished=false; club=0; angle=CLUBS[0].angle;
+  charging=false; setupHole();
+}
+function setClub(i){
+  if(!canAct()) return;
+  club=i; angle=CLUBS[i].angle; updateHud();
+}
+function startCharge(){
+  if(!charging && canAct()){charging=true; phase=0; power=0;}
+}
+function releaseCharge(){
+  if(charging){charging=false; if(canAct()) fire();}
+}
+
+function fire(){
+  const c=CLUBS[club];
+  let a=(club===2?0:angle)*Math.PI/180;
+  const pe=Math.abs(power-0.92);
+  const p=Math.max(0.15,power)*c.power*(1-Math.random()*pe*0.5);
+  const spread=club===2?0.5:(3+pe*30);
+  a+=(Math.random()-0.5)*spread*Math.PI/180;
+  lastLieX=char.x;
+  ball={x:char.x+14,y:char.y-5,vx:Math.cos(a)*p,vy:-Math.sin(a)*p,rest:false};
+  strokes++; totalStrokes++;
+  msg(`${c.name} swing!`);
+  updateHud();
+}
+
+function scoreName(s,p){
+  const d=s-p;
+  if(s===1) return 'Hole in one!';
+  if(d<=-2) return 'Eagle!';
+  if(d===-1) return 'Birdie!';
+  if(d===0) return 'Par.';
+  if(d===1) return 'Bogey.';
+  if(d===2) return 'Double bogey.';
+  return `+${d}`;
+}
+
+function teleportToBall(){
+  char.x=Math.max(4,Math.min(W-4,ball.x-14));
+  char.y=ground(char.x);
+}
+
+function update(dt){
+  if(charging){phase+=dt*3.2; power=0.5-0.5*Math.cos(phase);}
+
+  if(holed){
+    holeTimer-=dt;
+    if(holeTimer<=0){
+      if(hole===17){finished=true; showFinal();}
+      else {hole++; setupHole();}
+    }
+    return;
+  }
+
+  if(ball && !ball.rest){
+    const b=ball;
+    b.vy+=GRAV; b.x+=b.vx; b.y+=b.vy;
+    if(b.vy!==0) b.vx+=wind*0.03;
+    if(b.y>470){splash(); return;}
+
+    if(Math.abs(b.x-cupX)<7 && b.y>=392 && Math.abs(b.vx)<2.5){
+      holed=true; holeTimer=2.2; b.rest=true; b.x=cupX; b.y=400;
+      char.x=cupX-14; char.y=ground(cupX-14);
+      msg(`${scoreName(strokes,PAR[hole])} (${strokes} strokes)`);
+      return;
+    }
+
+    if(Math.abs(b.x-cupX)>=7){
+      const gy=ground(b.x);
+      if(b.y>=gy-4 && inWater(b.x)){splash(); return;}
+      if(b.y>=gy-4){
+        b.y=gy-4;
+        if(b.vy>0){
+          if(b.vy>1.2){b.vy=-b.vy*0.35; b.vx*=0.85;}
+          else {b.vy=0;}
+        }
+        if(b.vy===0){
+          b.vx-=slope(b.x)*0.15;
+          b.vx*=inSand(b.x)?0.9:0.975;
+        }
+      }
+    }
+
+    if(b.x<4){b.x=4; b.vx=0;}
+    if(b.x>W-4){b.x=W-4; b.vx=0;}
+
+    if(b.vy===0 && Math.abs(b.vx)<0.12){
+      b.vx=0; b.rest=true;
+      teleportToBall();
+      msg(`Teleported to the ball · ${strokes} stroke${strokes===1?'':'s'} on hole ${hole+1}`);
+    }
+  }
+
+  const target=(ball && !ball.rest)?ball.x:char.x;
+  camX+=(target-VW/2-camX)*0.08;
+  camX=Math.max(0,Math.min(W-VW,camX));
+}
+
+function showFinal(){
+  const diff=totalStrokes-PARTOTAL;
+  msg(`Round over! ${totalStrokes} strokes vs par ${PARTOTAL} (${diff>=0?'+':''}${diff}). Press R to play again.`);
+  updateHud();
+}
+
+function drawGolfer(sx,sy){
+  g.strokeStyle='#222'; g.lineWidth=3;
+  g.beginPath(); g.moveTo(sx,sy-22); g.lineTo(sx,sy-8); g.stroke();
+  g.beginPath(); g.moveTo(sx,sy-8); g.lineTo(sx-5,sy); g.moveTo(sx,sy-8); g.lineTo(sx+5,sy); g.stroke();
+  g.fillStyle='#f5c8a0'; g.beginPath(); g.arc(sx,sy-28,6,0,Math.PI*2); g.fill();
+  g.fillStyle='#c0392b'; g.fillRect(sx-6,sy-35,12,3);
+  const hx=sx+6, hy=sy-16;
+  g.beginPath(); g.moveTo(sx,sy-18); g.lineTo(hx,hy); g.stroke();
+  const c=CLUBS[club];
+  const a=club===2?0.25:0.9;
+  const ex=hx+Math.cos(a)*c.len, ey=hy+Math.sin(a)*c.len;
+  g.strokeStyle='#555'; g.lineWidth=2;
+  g.beginPath(); g.moveTo(hx,hy); g.lineTo(ex,ey); g.stroke();
+  g.fillStyle='#777'; g.fillRect(ex-3,ey-1,6,3);
+}
+
+function draw(){
+  g.fillStyle='#8fd3ff'; g.fillRect(0,0,VW,VH);
+
+  g.fillStyle='#3c9a3c';
+  g.beginPath(); g.moveTo(0,VH);
+  for(let sx=0;sx<=VW;sx+=4) g.lineTo(sx,ground(sx+camX));
+  g.lineTo(VW,VH); g.closePath(); g.fill();
+
+  g.fillStyle='#5fd35f';
+  g.beginPath(); let started=false;
+  for(let sx=0;sx<=VW;sx+=4){
+    const wx=sx+camX;
+    if(wx<cupX-160) continue;
+    if(!started){g.moveTo(sx,VH); started=true;}
+    g.lineTo(sx,ground(wx));
+  }
+  if(started){g.lineTo(VW,VH); g.closePath(); g.fill();}
+
+  hazards.forEach(h=>{
+    const water=h.type==='water';
+    g.fillStyle=water?'#3a8fd9':'#e8d28a';
+    for(let wx=h.x1;wx<=h.x2;wx+=3){
+      const sx=wx-camX;
+      if(sx<-5||sx>VW+5) continue;
+      const gy=ground(wx);
+      if(water) g.fillRect(sx,gy+4,3,14);
+      else g.fillRect(sx,gy-1,3,8);
+    }
+  });
+
+  const cx=cupX-camX;
+  if(cx>-20 && cx<VW+20){
+    g.fillStyle='#222'; g.beginPath(); g.ellipse(cx,400,7,3,0,0,Math.PI*2); g.fill();
+    g.strokeStyle='#fff'; g.lineWidth=2;
+    g.beginPath(); g.moveTo(cx,400); g.lineTo(cx,290); g.stroke();
+    g.fillStyle='#e33'; g.beginPath(); g.moveTo(cx,290); g.lineTo(cx+22,298); g.lineTo(cx,306); g.fill();
+  }
+
+  drawGolfer(char.x-camX, char.y);
+
+  if(ball){
+    g.fillStyle='#fff'; g.beginPath(); g.arc(ball.x-camX,ball.y,4,0,Math.PI*2); g.fill();
+  }
+
+  if(charging){
+    g.fillStyle='#033'; g.fillRect(20,20,150,14);
+    g.fillStyle=power>0.8?'#e33':power>0.4?'#fc3':'#3c3';
+    g.fillRect(20,20,150*power,14);
+    g.strokeStyle='#fff'; g.lineWidth=1; g.strokeRect(20,20,150,14);
+  }
+}
+
+function frame(t){
+  const dt=Math.min(0.05,(t-last)/1000); last=t;
+  update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+let last=performance.now();
+
+document.addEventListener('keydown',e=>{
+  if(e.repeat && e.code!=='ArrowUp' && e.code!=='ArrowDown') return;
+  if(e.code==='Space'){e.preventDefault(); startCharge();}
+  else if(e.code==='ArrowUp'){e.preventDefault(); if(canAct()&&club!==2){angle=Math.min(70,angle+1); updateHud();}}
+  else if(e.code==='ArrowDown'){e.preventDefault(); if(canAct()&&club!==2){angle=Math.max(10,angle-1); updateHud();}}
+  else if(e.key==='1') setClub(0);
+  else if(e.key==='2') setClub(1);
+  else if(e.key==='3') setClub(2);
+  else if(e.key==='r'||e.key==='R') restart();
+});
+document.addEventListener('keyup',e=>{ if(e.code==='Space') releaseCharge(); });
+
+cv.addEventListener('pointerdown',e=>{e.preventDefault(); startCharge();});
+cv.addEventListener('pointerup',releaseCharge);
+cv.addEventListener('pointerleave',releaseCharge);
+
+document.querySelectorAll('button[data-c]').forEach(b=>{
+  b.addEventListener('click',()=>setClub(+b.dataset.c));
+});
+
+setupHole();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
